@@ -1,0 +1,88 @@
+services:
+  app:
+    build:
+      context: ../../..
+      dockerfile: ./src/infrastructure/docker/Dockerfile
+    container_name: nexus_aaaimx_api_server
+    networks:
+      - nexus_aaaimx_network
+    ports:
+      - "${PORT_EXTERNAL}:${PORT}"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      PORT: ${PORT}
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME}
+      API_VERSION: ${API_VERSION}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      BASE_URL: ${BASE_URL}
+      API_URL: ${API_URL}
+      FRONTEND_URL: ${FRONTEND_URL}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_SECURE: ${SMTP_SECURE}
+      SMTP_SERVICE: ${SMTP_SERVICE}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      SECRET_CODE: ${SECRET_CODE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASS: ${MYSQL_ROOT_PASS}
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_PORT: ${MYSQL_PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ../../../src:/usr/src/app/src
+      - /usr/src/app/node_modules
+      - /usr/src/app/.prisma
+
+  db:
+    image: mysql:8.0
+    restart: always
+    container_name: nexus_aaaimx_mysql_db
+    networks:
+      - nexus_aaaimx_network
+    ports:
+      - "${MYSQL_PORT_EXTERNAL}:${MYSQL_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --innodb_redo_log_capacity=16777216
+      --innodb_buffer_pool_size=256M
+      --innodb_log_buffer_size=16M
+      --innodb_flush_log_at_trx_commit=2
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p${MYSQL_ROOT_PASS}",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
+
+networks:
+  nexus_aaaimx_network:

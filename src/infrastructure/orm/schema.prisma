@@ -1,0 +1,410 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Enums
+enum OrganizerType {
+  USER
+  DIVISION
+  CLUB
+  EXTERNAL
+}
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum EventType {
+  SINGLE
+  COURSE
+  WORKSHOP
+  RECURRING
+}
+
+enum RecurrencePattern {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+model users {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  password          String?   // null if using only social login
+  first_name        String?
+  last_name         String?
+  bio               String?
+  photo_url         String?
+  is_email_verified Boolean   @default(false)
+  is_active         Boolean   @default(true)
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  last_login_at     DateTime? @default(now())
+  allow_notifications Boolean   @default(true)
+
+  verification_code String?
+  verification_expires DateTime?
+  reset_password_code   String?
+  reset_password_expires DateTime?
+  google_id    String?   @unique
+
+  // Relations
+  user_roles user_roles[]
+  user_clubs user_clubs[]
+  user_divisions user_divisions[]
+  projects projects[]
+  events events[]
+  event_attendances event_attendees[]
+  organized_events events[] @relation("event_organizer_user")
+  
+  // Solicitudes
+  project_requests project_requests[]
+  club_requests club_requests[]
+  division_requests division_requests[]
+  
+  // Membresía en proyectos
+  user_projects user_projects[]
+  
+  // Asistencia a sesiones específicas
+  session_attendances session_attendees[]
+  
+  @@map("users")
+}
+
+model roles {
+  id              String     @id @default(uuid())
+  name            String     @unique
+  description     String
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Relations
+  user_roles user_roles[]
+  role_permissions role_permissions[]
+}
+
+model permissions {
+  id              String     @id @default(uuid())
+  name            String     @unique
+  description     String
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Relations
+  role_permissions role_permissions[]
+}
+
+model events {
+  id String @id @default(uuid())
+  name String @unique
+  description String?
+  status String @default("draft") // draft, published, archived, online
+  event_type EventType @default(SINGLE)
+  
+  // Campos para eventos únicos
+  start_date DateTime?
+  end_date DateTime?
+  
+  // Campos para eventos recurrentes
+  is_recurring Boolean @default(false)
+  recurrence_pattern RecurrencePattern?
+  recurrence_interval Int? // Cada X días/semanas/meses
+  recurrence_start_date DateTime? // Cuándo empieza la recurrencia
+  recurrence_end_date DateTime? // Cuándo termina la recurrencia
+  recurrence_days String? // Para patrones personalizados: "1,3,5" (lunes, miércoles, viernes)
+  
+  // Duración de cada sesión (en minutos)
+  session_duration_minutes Int?
+  
+  start_time String? // Hora de inicio "09:00"
+  end_time String?   // Hora de fin "11:00"
+  
+  cover_url String?
+  location String?
+  is_public Boolean @default(true)
+  max_participants Int?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Organizador polimórfico
+  organizer_type OrganizerType
+  organizer_user_id String?
+  organizer_division_id String?
+  organizer_club_id String?
+  external_organizer_name String?
+
+  // Relations
+  user_id String // Usuario que crea el evento (mantener para auditoría)
+  user users @relation(fields: [user_id], references: [id])
+  attendees event_attendees[]
+  sessions event_sessions[] // Sesiones del evento recurrente
+  
+  // Relaciones opcionales con organizadores
+  organizer_user users? @relation("event_organizer_user", fields: [organizer_user_id], references: [id])
+  organizer_division divisions? @relation(fields: [organizer_division_id], references: [id])
+  organizer_club clubs? @relation(fields: [organizer_club_id], references: [id])
+  
+  @@map("events")
+}
+
+model projects {
+  id String @id @default(uuid())
+  name String @unique
+  description String?
+  cover_url String?
+  status String @default("draft") // draft, published, archived, online
+  is_public Boolean @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user_id String
+  user users @relation(fields: [user_id], references: [id]) 
+  tags tags[]
+  clubs clubs[]
+  divisions divisions[]
+  project_requests project_requests[]
+  user_projects user_projects[]
+  @@map("projects")
+}
+
+// Intermediary models
+
+model role_permissions {
+  role_id         String
+  permission_id   String
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Relations
+  role            roles      @relation(fields: [role_id], references: [id])
+  permission      permissions @relation(fields: [permission_id], references: [id])
+  @@id([role_id, permission_id])
+}
+
+model user_roles {
+  user_id String
+  role_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  role roles @relation(fields: [role_id], references: [id])
+
+  @@id([user_id, role_id])
+  @@map("user_roles")
+}
+
+model event_attendees {
+  id String @id @default(uuid())
+  user_id String
+  event_id String
+  status String @default("registered") // "registered" o "cancelled"
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  event events @relation(fields: [event_id], references: [id])
+
+  @@unique([user_id, event_id])
+  @@map("event_attendees")
+}
+
+// Modelo para sesiones de eventos recurrentes
+model event_sessions {
+  id String @id @default(uuid())
+  event_id String
+  session_date DateTime
+  start_time String // "09:00"
+  end_time String   // "11:00"
+  is_cancelled Boolean @default(false)
+  cancellation_reason String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  event events @relation(fields: [event_id], references: [id])
+  attendees session_attendees[] // Asistencia específica por sesión
+
+  @@map("event_sessions")
+}
+
+// Modelo para asistencia a sesiones específicas
+model session_attendees {
+  id String @id @default(uuid())
+  user_id String
+  session_id String
+  status String @default("registered") // "registered", "attended", "absent", "cancelled"
+  notes String? // Notas del usuario o admin
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  session event_sessions @relation(fields: [session_id], references: [id])
+
+  @@unique([user_id, session_id]) // Un usuario solo puede estar registrado una vez por sesión
+  @@map("session_attendees")
+}
+
+// Modelo para membresía de usuarios en proyectos
+model user_projects {
+  user_id String
+  project_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  project projects @relation(fields: [project_id], references: [id])
+
+  @@id([user_id, project_id])
+  @@map("user_projects")
+}
+
+model user_clubs {
+  user_id String
+  club_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  club clubs @relation(fields: [club_id], references: [id])
+
+  @@id([user_id, club_id])
+  @@map("user_clubs")
+}
+
+model user_divisions {
+  user_id String
+  division_id String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  division divisions @relation(fields: [division_id], references: [id])
+
+  @@id([user_id, division_id])
+  @@map("user_divisions")
+}
+
+// Catalogs
+
+model tags {
+  id String @id @default(uuid())
+  name String @unique
+  description String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  projects projects[]
+  clubs clubs[]
+  divisions divisions[]
+}
+
+model clubs {
+  id String @id @default(uuid())
+  name String @unique
+  description String?
+  logo_url String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  projects projects[]
+  user_clubs user_clubs[]
+  organized_events events[]
+  club_requests club_requests[]
+  tags tags[]
+}
+
+model divisions {
+  id String @id @default(uuid())
+  name String @unique
+  description String?
+  logo_url String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  projects projects[]
+  user_divisions user_divisions[]
+  organized_events events[]
+  division_requests division_requests[]
+  tags tags[]
+}
+
+// Requests
+
+model project_requests {
+  id String @id @default(uuid())
+  user_id String
+  project_id String
+  status RequestStatus @default(PENDING)
+  message String? // Mensaje opcional del solicitante
+  admin_message String? // Mensaje del admin al aprobar/rechazar
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  project projects @relation(fields: [project_id], references: [id])
+
+  @@unique([user_id, project_id]) // Un usuario solo puede solicitar una vez por proyecto
+  @@map("project_requests")
+}
+
+// Modelo para solicitudes de clubs
+model club_requests {
+  id String @id @default(uuid())
+  user_id String
+  club_id String
+  status RequestStatus @default(PENDING)
+  message String? // Mensaje opcional del solicitante
+  admin_message String? // Mensaje del admin al aprobar/rechazar
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  club clubs @relation(fields: [club_id], references: [id])
+
+  @@unique([user_id, club_id]) // Un usuario solo puede solicitar una vez por club
+  @@map("club_requests")
+}
+
+// Modelo para solicitudes de divisions
+model division_requests {
+  id String @id @default(uuid())
+  user_id String
+  division_id String
+  status RequestStatus @default(PENDING)
+  message String? // Mensaje opcional del solicitante
+  admin_message String? // Mensaje del admin al aprobar/rechazar
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  user users @relation(fields: [user_id], references: [id])
+  division divisions @relation(fields: [division_id], references: [id])
+
+  @@unique([user_id, division_id]) // Un usuario solo puede solicitar una vez por división
+  @@map("division_requests")
+}
