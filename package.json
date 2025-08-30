@@ -1,0 +1,81 @@
+{
+  "name": "nexus_aaaimx_api_server",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Nexus AAAIMX API Server with Clean Architecture",
+  "prisma": {
+    "schema": "./src/infrastructure/orm/schema.prisma"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/infrastructure/webserver/index.ts",
+    "build": "tsc && tsc-alias && prisma generate --schema=src/infrastructure/orm/schema.prisma",
+    "start": "node dist/infrastructure/webserver/index.js",
+    "postinstall": "prisma generate --schema=src/infrastructure/orm/schema.prisma",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "prepare": "husky",
+    "test": "jest",
+    "compile": "rm -rf dist && pnpm run lint:fix && pnpm run test && pnpm run build",
+    "docker:build": "docker-compose -f src/infrastructure/docker/docker-compose.yml --env-file .env up --build",
+    "docker:down": "docker-compose -f src/infrastructure/docker/docker-compose.yml --env-file .env down",
+    "docker:logs": "docker-compose -f src/infrastructure/docker/docker-compose.yml --env-file .env logs -f",
+    "docker:dev": "docker-compose -f src/infrastructure/docker/docker-compose.yml --env-file .env up",
+    "prisma:generate": "prisma generate --schema=src/infrastructure/orm/schema.prisma",
+    "prisma:migrate:dev": "prisma migrate dev --schema=src/infrastructure/orm/schema.prisma",
+    "prisma:migrate:reset": "prisma migrate reset --schema=src/infrastructure/orm/schema.prisma",
+    "prisma:migrate:rollback": "prisma migrate rollback --schema=src/infrastructure/orm/schema.prisma",
+    "prisma:seed": "ts-node -r tsconfig-paths/register src/infrastructure/orm/seeders/index.ts"
+  },
+  "keywords": [
+    "api",
+    "server",
+    "typescript",
+    "express",
+    "clean-architecture"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.5.1",
+  "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "nodemailer": "^7.0.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "winston": "^3.17.0",
+    "zod": "^4.1.4"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@mermaid-js/mermaid-cli": "^11.9.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "husky": "^9.1.7",
+    "jest": "^30.1.1",
+    "prisma": "^6.15.0",
+    "prisma-erd-generator": "^2.0.4",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  }
+}

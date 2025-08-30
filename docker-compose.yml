@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./src/infrastructure/docker/Dockerfile
+    container_name: nexus_aaaimx_app
+    networks:
+      - nexus_network
+    ports:
+      - '${PORT_EXTERNAL:-3000}:${PORT:-3000}'
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: ${PORT:-3000}
+      COMPOSE_PROJECT_NAME: ${COMPOSE_PROJECT_NAME:-nexus_aaaimx}
+      API_VERSION: ${API_VERSION:-v1}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:3001}
+      BASE_URL: ${BASE_URL:-http://localhost:3000}
+      API_URL: ${API_URL:-http://localhost:3000/api}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
+      COOKIE_DOMAIN: ${COOKIE_DOMAIN:-localhost}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_SERVICE: ${SMTP_SERVICE:-gmail}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SECRET_CODE: ${SECRET_CODE:-your-secret-code}
+      MYSQL_USER: ${MYSQL_USER:-nexus_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-nexus_password}
+      MYSQL_ROOT_PASS: ${MYSQL_ROOT_PASS:-nexus_root_password}
+      MYSQL_DB: ${MYSQL_DB:-nexus_aaaimx_db}
+      MYSQL_PORT: ${MYSQL_PORT:-3306}
+      DATABASE_URL: ${DATABASE_URL:-mysql://nexus_user:nexus_password@db:3306/nexus_aaaimx_db}
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-key}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-jwt-refresh-secret-key}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-http://localhost:3000/auth/google/callback}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./src:/usr/src/app/src
+      - /usr/src/app/node_modules
+      - /usr/src/app/.prisma
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    restart: always
+    container_name: nexus_aaaimx_mysql_db
+    networks:
+      - nexus_network
+    ports:
+      - '${MYSQL_PORT_EXTERNAL:-3307}:${MYSQL_PORT:-3306}'
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASS:-nexus_root_password}
+      MYSQL_USER: ${MYSQL_USER:-nexus_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-nexus_password}
+      MYSQL_DATABASE: ${MYSQL_DB:-nexus_aaaimx_db}
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --innodb_redo_log_capacity=16777216
+      --innodb_buffer_pool_size=256M
+      --innodb_log_buffer_size=16M
+      --innodb_flush_log_at_trx_commit=2
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'mysqladmin',
+          'ping',
+          '-h',
+          'localhost',
+          '-u',
+          'root',
+          '-p${MYSQL_ROOT_PASS:-nexus_root_password}',
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  nexus_network:
+    driver: bridge

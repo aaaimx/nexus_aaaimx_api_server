@@ -1,0 +1,27 @@
+# Get the current branch name
+# current_branch=$(git symbolic-ref HEAD | sed 's/refs\/heads\///')
+
+# Define protected branches
+# protected_branches="main dev"
+
+# Check if current branch is protected
+# for branch in $protected_branches; do
+#     if [ "$current_branch" = "$branch" ]; then
+#         echo "❌ ERROR: Direct pushes to '$branch' branch are not allowed!"
+#         echo ""
+#         echo "📝 To make changes to '$branch':"
+#         echo "   1. Create a new branch from '$branch': git checkout -b feature/your-feature-name"
+#         echo "   2. Make your changes and commit them"
+#         echo "   3. Push your branch: git push origin feature/your-feature-name"
+#         echo "   4. Create a Pull Request to merge your changes into '$branch'"
+#         echo ""
+#         echo "🔒 This restriction helps maintain code quality and prevents accidental changes to protected branches."
+#         exit 1
+#     fi
+# done
+
+# echo "✅ Push allowed for branch '$current_branch'"
+echo "Running Compile..."
+pnpm compile || { echo "Compile failed. Fix the issues and try again."; exit 1; }
+
+echo "All checks passed. Proceeding with push."
