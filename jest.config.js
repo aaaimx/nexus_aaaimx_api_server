@@ -30,7 +30,7 @@ export default {
     "^@/infrastructure/(.*)$": "<rootDir>/src/infrastructure/$1",
     "^@/interfaces/(.*)$": "<rootDir>/src/interfaces/$1",
   },
-  setupFilesAfterEnv: ["<rootDir>/src/tests/setup.ts"],
+  setupFiles: ["<rootDir>/src/tests/setup.ts"],
   testTimeout: 10000,
   verbose: true,
 };
