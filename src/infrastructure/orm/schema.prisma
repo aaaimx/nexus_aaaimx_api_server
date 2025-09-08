@@ -92,19 +92,8 @@ model roles {
 
   // Relations
   user_roles user_roles[]
-  role_permissions role_permissions[]
 }
 
-model permissions {
-  id              String     @id @default(uuid())
-  name            String     @unique
-  description     String
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
-
-  // Relations
-  role_permissions role_permissions[]
-}
 
 model events {
   id String @id @default(uuid())
@@ -182,17 +171,6 @@ model projects {
 
 // Intermediary models
 
-model role_permissions {
-  role_id         String
-  permission_id   String
-  created_at      DateTime   @default(now())
-  updated_at      DateTime   @updatedAt
-
-  // Relations
-  role            roles      @relation(fields: [role_id], references: [id])
-  permission      permissions @relation(fields: [permission_id], references: [id])
-  @@id([role_id, permission_id])
-}
 
 model user_roles {
   user_id String
