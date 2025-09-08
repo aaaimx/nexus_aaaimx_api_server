@@ -4,6 +4,8 @@ import express, { Express } from "express";
 
 import Config from "@/infrastructure/config/index";
 import { globalRateLimiter } from "@/interfaces/middlewares/rate-limiter.middleware";
+import { timezoneMiddleware } from "@/interfaces/middlewares/timezone.middleware";
+import healthCheckRoutes from "@/interfaces/routes/health-check.routes";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import {
@@ -32,9 +34,15 @@ app.use("/branding", express.static("public/branding"));
 // Parse JSON bodies
 app.use(express.json());
 
+// Timezone middleware - automatically formats timestamps to Mexico timezone
+app.use(timezoneMiddleware);
+
 // Cookie debug middleware (only active in production when needed)
 // Uncomment the line below when you need to debug cookie issues in production
 // app.use(cookieDebugMiddleware);
+
+// Health check routes (no rate limiting for monitoring systems)
+app.use(`/api/v${Config.apiVersion}/health`, healthCheckRoutes);
 
 // Global rate limiting
 app.use(globalRateLimiter);

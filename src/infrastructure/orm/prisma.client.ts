@@ -5,10 +5,10 @@ import dotenv from "dotenv";
 dotenv.config();
 
 declare global {
-  var prisma: ReturnType<typeof createPrismaClient> | undefined;
+  var prisma: ReturnType<typeof _createPrismaClient> | undefined;
 }
 
-const createPrismaClient = () => {
+const _createPrismaClient = () => {
   return new PrismaClient().$extends({
     query: {
       $allOperations({ operation, args, query }) {
@@ -22,7 +22,7 @@ const createPrismaClient = () => {
   });
 };
 
-const prisma = global.prisma || createPrismaClient();
+const prisma = global.prisma || _createPrismaClient();
 
 if (process.env["NODE_ENV"] === "development") {
   global.prisma = prisma;

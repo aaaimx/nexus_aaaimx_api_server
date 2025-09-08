@@ -14,9 +14,37 @@ export interface ApiResponseData<T> {
   message: string;
   data: T | null;
   status: number;
-  description: string;
   code?: string;
   details?: Record<string, unknown>;
+}
+
+export class ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T | null;
+  status: number;
+  code?: string;
+  details?: Record<string, unknown>;
+
+  constructor(
+    success: boolean,
+    message: string,
+    data: T | null,
+    status: number,
+    code?: string,
+    details?: Record<string, unknown>
+  ) {
+    this.success = success;
+    this.message = message;
+    this.data = data;
+    this.status = status;
+    if (code !== undefined) {
+      this.code = code;
+    }
+    if (details !== undefined) {
+      this.details = details;
+    }
+  }
 }
 
 export default class ApiResponseUtil {
@@ -38,7 +66,6 @@ export default class ApiResponseUtil {
       message,
       data,
       status,
-      description: message,
     };
     res.status(status).json(response);
   }
@@ -63,7 +90,6 @@ export default class ApiResponseUtil {
       success: false,
       status: appError.status,
       message: appError.message,
-      description: appError.description ?? "An unexpected error occurred",
       details: appError.details ?? {},
       data: null,
     };
