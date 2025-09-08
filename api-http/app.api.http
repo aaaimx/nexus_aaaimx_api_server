@@ -1,0 +1,15 @@
+### Health Check Endpoints
+
+@baseUrl = http://localhost:8000/api/v1
+
+@endpoint = /health
+
+### Comprehensive Health Check
+GET {{baseUrl}}{{endpoint}}
+Content-Type: application/json
+
+###
+
+### Liveness Probe
+GET {{baseUrl}}{{endpoint}}/live
+Content-Type: application/json
