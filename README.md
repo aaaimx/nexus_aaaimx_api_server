@@ -113,7 +113,42 @@ pnpm db:migrate
 pnpm db:studio
 
 # Seed database with sample data
-pnpm db:seed
+pnpm run prisma:seed
+```
+
+### Database Seeders
+
+The project includes comprehensive seeders for initial data:
+
+- **Roles**: committee, president, leader, co-leader, senior member, member
+- **Divisions**: software, robotics, artificial_intelligence, cybersecurity, dep_ops, video_games
+- **Clubs**: videogames
+- **Tags**: 51+ technology-related tags (programming languages, frameworks, tools, etc.)
+
+#### Local Development
+
+```bash
+# Run all seeders
+pnpm run prisma:seed
+
+# Run individual seeders
+tsx src/infrastructure/orm/seeders/roles.seeder.ts
+tsx src/infrastructure/orm/seeders/divisions.seeder.ts
+tsx src/infrastructure/orm/seeders/clubs.seeder.ts
+tsx src/infrastructure/orm/seeders/tags.seeder.ts
+```
+
+#### Docker Development
+
+```bash
+# Run all seeders
+docker exec -it nexus_aaaimx_api_server bash -c "cd /usr/src/app && npx tsx src/infrastructure/orm/seeders/index.ts"
+
+# Run individual seeders
+docker exec -it nexus_aaaimx_api_server bash -c "cd /usr/src/app && npx tsx src/infrastructure/orm/seeders/roles.seeder.ts"
+docker exec -it nexus_aaaimx_api_server bash -c "cd /usr/src/app && npx tsx src/infrastructure/orm/seeders/divisions.seeder.ts"
+docker exec -it nexus_aaaimx_api_server bash -c "cd /usr/src/app && npx tsx src/infrastructure/orm/seeders/clubs.seeder.ts"
+docker exec -it nexus_aaaimx_api_server bash -c "cd /usr/src/app && npx tsx src/infrastructure/orm/seeders/tags.seeder.ts"
 ```
 
 ### Docker Development
@@ -134,7 +169,7 @@ docker exec -it nexus_aaaimx_api_server pnpm prisma migrate dev --schema=src/inf
 docker exec -it nexus_aaaimx_api_server pnpm prisma studio --schema=src/infrastructure/orm/schema.prisma
 
 # Seed database with sample data
-docker exec -it nexus_aaaimx_api_server pnpm prisma db seed --schema=src/infrastructure/orm/schema.prisma
+docker exec -it nexus_aaaimx_api_server bash -c "cd /usr/src/app && npx tsx src/infrastructure/orm/seeders/index.ts"
 
 # Connect to MySQL directly
 docker exec -it nexus_aaaimx_mysql_db mysql -u nexus_aaaimx -p nexus_aaaimx_db
