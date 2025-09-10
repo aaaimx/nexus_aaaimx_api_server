@@ -1,0 +1,116 @@
+### Authentication API Tests
+
+### Variables
+@baseUrl = http://localhost:8000/api/v1
+
+# ------------------------------------------------------------
+
+### POST /auth/signup
+# Description: Creates a new user account in the system and sends a verification code to the user's email address.
+POST {{baseUrl}}/auth/signup
+Content-Type: application/json
+
+{
+  "first_name": "Jorge",
+  "last_name": "Sarricolea",
+  "email": "jjorgesarricolea18@gmail.com",
+  "password": "Passw0rd!",
+  "birth_date": "2001-06-18T00:00:00.000Z",
+  "bio": "Software engineer passionate about clean code and architecture"
+}
+
+# ------------------------------------------------------------
+
+### POST /auth/login
+# Description: Authenticates a user and returns JWT tokens in cookies.
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "jjorgesarricolea18@gmail.com",
+  "password": "Passw0rd!"
+}
+
+# ------------------------------------------------------------
+
+### POST /auth/logout
+# Description: Logs out the user by clearing authentication cookies.
+# Note: Uses access_token from cookies
+POST {{baseUrl}}/auth/logout
+Content-Type: application/json
+
+# ------------------------------------------------------------
+
+### POST /auth/send-verification-code
+# Description: Sends a verification code to the user's email address.
+POST {{baseUrl}}/auth/send-verification-code
+Content-Type: application/json
+
+{
+  "email": "jjorgesarricolea18@gmail.com"
+}
+
+# ------------------------------------------------------------
+
+### POST /auth/verify-email
+# Description: Verifies the user's email address using a verification code.
+POST {{baseUrl}}/auth/verify-email
+Content-Type: application/json
+
+{
+  "email": "jjorgesarricolea18@gmail.com",
+  "verification_code": "MBWZCC"
+}
+
+# ------------------------------------------------------------
+
+### GET /auth/validate-access
+# Description: Validates if the user's session token is valid and account is verified.
+# Note: Uses access_token from cookies
+GET {{baseUrl}}/auth/validate-access
+Content-Type: application/json
+
+# ------------------------------------------------------------
+
+### POST /auth/request-reset-password
+# Description: Requests a password reset for the user's email address.
+POST {{baseUrl}}/auth/request-reset-password
+Content-Type: application/json
+
+{
+  "email": "jjorgesarricolea18@gmail.com"
+}
+
+# ------------------------------------------------------------
+
+### POST /auth/reset-password
+# Description: Resets the user's password using the code sent to their email.
+POST {{baseUrl}}/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "jjorgesarricolea18@gmail.com",
+  "reset_password_code": "XXXXXX",
+  "new_password": "NewPassw0rd!"
+}
+
+# ------------------------------------------------------------
+
+### POST /auth/refresh-token
+# Description: Refreshes the user's access token.
+# Note: Uses refresh_token from cookies, new tokens are set in HTTP-only cookies
+POST {{baseUrl}}/auth/refresh-token
+Content-Type: application/json
+
+# ------------------------------------------------------------
+
+### GET /auth/google
+# Description: Initiates the Google OAuth authentication flow. Try on browser.
+# Note: This endpoint should be accessed through a browser
+GET {{baseUrl}}/auth/google
+
+# ------------------------------------------------------------
+
+### GET /auth/google/callback
+# Description: Callback endpoint for Google OAuth authentication.
+GET {{baseUrl}}/auth/google/callback

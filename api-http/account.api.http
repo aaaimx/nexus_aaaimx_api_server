@@ -1,0 +1,28 @@
+### Account API Tests
+
+### Variables
+@baseUrl = http://localhost:8000/api/v1
+
+# ------------------------------------------------------------
+
+### POST /account/upload-profile-photo
+# Description: Uploads a profile photo for the authenticated user.
+# Note: Requires authentication (access_token cookie)
+POST {{baseUrl}}/account/upload-profile-photo
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="profile_photo"; filename="profile.png"
+Content-Type: image/jpeg
+
+< ./profile.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+# ------------------------------------------------------------
+
+### GET /account/profile-photo
+# Description: Gets the authenticated user's profile photo
+# Note: Requires authentication (access_token cookie)
+GET {{baseUrl}}/account/profile-photo
+
+# ------------------------------------------------------------
