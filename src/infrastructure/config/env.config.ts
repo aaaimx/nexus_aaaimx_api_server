@@ -69,12 +69,12 @@ export default class EnvConfig {
     return this.config.GOOGLE_CALLBACK_URL;
   }
 
-  get logoUrl(): string | undefined {
-    return this.config.LOGO_URL;
-  }
-
   get frontendUrl(): string {
     return this.config.FRONTEND_URL;
+  }
+
+  get logoUrl(): string | undefined {
+    return this.config.LOGO_URL;
   }
 
   get cookieDomain(): string | undefined {

@@ -31,6 +31,9 @@ app.use(express.static("public"));
 // Serve branding files with a specific route
 app.use("/branding", express.static("public/branding"));
 
+// Serve uploaded files
+app.use("/uploads", express.static("uploads"));
+
 // Parse JSON bodies
 app.use(express.json());
 
@@ -48,7 +51,9 @@ app.use(`/api/v${Config.apiVersion}/health`, healthCheckRoutes);
 app.use(globalRateLimiter);
 
 // Routes
-//app.use(`/api/v${Config.apiVersion}`, authRoutes);
+import { authRoutes, accountRoutes } from "@/interfaces/routes";
+app.use(`/api/v${Config.apiVersion}/auth`, authRoutes);
+app.use(`/api/v${Config.apiVersion}/account`, accountRoutes);
 
 // Swagger documentation
 const swaggerSpec = swaggerJsdoc(Config.swaggerConfig);
