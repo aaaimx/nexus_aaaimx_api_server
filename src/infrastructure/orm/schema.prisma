@@ -39,7 +39,7 @@ enum RecurrencePattern {
 }
 
 model users {
-  id                String    @id @default(cuid())
+  id                String    @id @default(uuid())
   email             String    @unique
   password          String?   // null if using only social login
   first_name        String?
