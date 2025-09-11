@@ -1,0 +1,7 @@
+### Divisions API - Nexus AAAIMX
+
+@baseUrl = http://localhost:8000/api/v1
+
+### GET /divisions
+# Description: Retrieves all divisions in the system catalog.
+GET {{baseUrl}}/divisions
