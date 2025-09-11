@@ -38,6 +38,18 @@ enum RecurrencePattern {
   CUSTOM
 }
 
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+  ONLINE
+}
+
+enum AttendeeStatus {
+  REGISTERED
+  CANCELLED
+}
+
 model users {
   id                String    @id @default(uuid())
   email             String    @unique
@@ -77,8 +89,6 @@ model users {
   // Membresía en proyectos
   user_projects user_projects[]
   
-  // Asistencia a sesiones específicas
-  session_attendances session_attendees[]
   
   @@map("users")
 }
@@ -99,7 +109,7 @@ model events {
   id String @id @default(uuid())
   name String @unique
   description String?
-  status String @default("draft") // draft, published, archived, online
+  status EventStatus @default(DRAFT)
   event_type EventType @default(SINGLE)
   
   // Campos para eventos únicos
@@ -145,6 +155,12 @@ model events {
   organizer_division divisions? @relation(fields: [organizer_division_id], references: [id])
   organizer_club clubs? @relation(fields: [organizer_club_id], references: [id])
   
+  // Nota: Las validaciones de negocio se implementan a nivel de aplicación
+  // - start_date <= end_date
+  // - start_time < end_time  
+  // - Solo un campo de organizador debe estar definido según organizer_type
+  // - Eventos recurrentes deben tener patrón y fechas de recurrencia
+  
   @@map("events")
 }
 
@@ -153,7 +169,7 @@ model projects {
   name String @unique
   description String?
   cover_url String?
-  status String @default("draft") // draft, published, archived, online
+  status EventStatus @default(DRAFT)
   is_public Boolean @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -170,7 +186,6 @@ model projects {
 }
 
 // Intermediary models
-
 
 model user_roles {
   user_id String
@@ -190,7 +205,7 @@ model event_attendees {
   id String @id @default(uuid())
   user_id String
   event_id String
-  status String @default("registered") // "registered" o "cancelled"
+  status AttendeeStatus @default(REGISTERED)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
@@ -216,28 +231,10 @@ model event_sessions {
 
   // Relations
   event events @relation(fields: [event_id], references: [id])
-  attendees session_attendees[] // Asistencia específica por sesión
 
   @@map("event_sessions")
 }
 
-// Modelo para asistencia a sesiones específicas
-model session_attendees {
-  id String @id @default(uuid())
-  user_id String
-  session_id String
-  status String @default("registered") // "registered", "attended", "absent", "cancelled"
-  notes String? // Notas del usuario o admin
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  user users @relation(fields: [user_id], references: [id])
-  session event_sessions @relation(fields: [session_id], references: [id])
-
-  @@unique([user_id, session_id]) // Un usuario solo puede estar registrado una vez por sesión
-  @@map("session_attendees")
-}
 
 // Modelo para membresía de usuarios en proyectos
 model user_projects {
