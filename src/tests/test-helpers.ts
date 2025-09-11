@@ -82,42 +82,53 @@ export function createMockRoleRepository(): jest.Mocked<IRoleRepository> {
 
 export function createMockJwtService(): jest.Mocked<JwtService> {
   return {
-    generateAccessToken: jest.fn(),
-    generateRefreshToken: jest.fn(),
-    verifyAccessToken: jest.fn(),
-    verifyRefreshToken: jest.fn(),
-    getUserIdFromToken: jest.fn(),
-    extractAndValidateToken: jest.fn(),
-    extractTokenFromRequest: jest.fn(),
+    generateAccessToken: jest.fn().mockReturnValue("mock-access-token"),
+    generateRefreshToken: jest.fn().mockReturnValue("mock-refresh-token"),
+    verifyAccessToken: jest
+      .fn()
+      .mockReturnValue({ id: "user-123", email: "test@example.com" }),
+    verifyRefreshToken: jest
+      .fn()
+      .mockReturnValue({ id: "user-123", email: "test@example.com" }),
+    getUserIdFromToken: jest.fn().mockReturnValue("user-123"),
+    extractAndValidateToken: jest
+      .fn()
+      .mockReturnValue({ id: "user-123", email: "test@example.com" }),
+    extractTokenFromRequest: jest.fn().mockReturnValue("mock-token"),
   };
 }
 
 export function createMockPasswordService(): jest.Mocked<PasswordService> {
   return {
-    hash: jest.fn(),
-    compare: jest.fn(),
+    hash: jest.fn().mockResolvedValue("hashed-password"),
+    compare: jest.fn().mockResolvedValue(true),
   };
 }
 
 export function createMockVerificationCodeService(): jest.Mocked<VerificationCodeService> {
   return {
-    generateCode: jest.fn(),
-    validateCode: jest.fn(),
-    isExpired: jest.fn(),
+    generateCode: jest
+      .fn()
+      .mockReturnValue({
+        code: "123456",
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+      }),
+    validateCode: jest.fn().mockReturnValue(true),
+    isExpired: jest.fn().mockReturnValue(false),
   };
 }
 
 export function createMockMailService(): jest.Mocked<MailService> {
   const mockService = {
-    sendVerificationEmail: jest.fn(),
-    sendEmailVerifiedConfirmation: jest.fn(),
-    sendVerificationSuccessEmail: jest.fn(),
-    sendPasswordResetEmail: jest.fn(),
-    sendPasswordResetSuccessEmail: jest.fn(),
-    sendGenericEmail: jest.fn(),
-    sendEmail: jest.fn(),
-    checkNotificationSettings: jest.fn(),
-    sendEmailWithNotificationCheck: jest.fn(),
+    sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+    sendEmailVerifiedConfirmation: jest.fn().mockResolvedValue(undefined),
+    sendVerificationSuccessEmail: jest.fn().mockResolvedValue(undefined),
+    sendPasswordResetEmail: jest.fn().mockResolvedValue(undefined),
+    sendPasswordResetSuccessEmail: jest.fn().mockResolvedValue(undefined),
+    sendGenericEmail: jest.fn().mockResolvedValue(undefined),
+    sendEmail: jest.fn().mockResolvedValue(undefined),
+    checkNotificationSettings: jest.fn().mockResolvedValue(true),
+    sendEmailWithNotificationCheck: jest.fn().mockResolvedValue(undefined),
   } as any;
 
   // Add the private transporter property
@@ -131,7 +142,7 @@ export function createMockMailService(): jest.Mocked<MailService> {
 
 export function createMockSessionService(): jest.Mocked<SessionService> {
   const mockService = {
-    updateLastSessionDate: jest.fn(),
+    updateLastSessionDate: jest.fn().mockResolvedValue(undefined),
   } as any;
 
   // Add the private userRepository property

@@ -3,15 +3,15 @@ export default {
   testEnvironment: "node",
   extensionsToTreatAsEsm: [".ts"],
   transform: {
-    "^.+\\.ts$": ["ts-jest", {
-      useESM: true,
-    }],
+    "^.+\\.ts$": [
+      "ts-jest",
+      {
+        useESM: true,
+      },
+    ],
   },
   roots: ["<rootDir>/src"],
   testMatch: ["**/__tests__/**/*.ts", "**/?(*.)+(spec|test).ts"],
-  transform: {
-    "^.+\\.ts$": "ts-jest",
-  },
   collectCoverageFrom: [
     "src/**/*.ts",
     "!src/**/*.d.ts",
@@ -31,6 +31,11 @@ export default {
     "^@/interfaces/(.*)$": "<rootDir>/src/interfaces/$1",
   },
   setupFiles: ["<rootDir>/src/tests/setup.ts"],
-  testTimeout: 10000,
-  verbose: true,
+  testTimeout: 5000,
+  verbose: false,
+  maxWorkers: "50%",
+  cache: true,
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
 };
