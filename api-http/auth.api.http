@@ -1,4 +1,4 @@
-### Authentication API Tests
+### Authentication API - Nexus AAAIMX
 
 ### Variables
 @baseUrl = http://localhost:8000/api/v1
