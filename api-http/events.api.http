@@ -1,0 +1,251 @@
+### Events API - Nexus AAAIMX
+
+@baseUrl = http://localhost:8000/api/v1
+
+### ============================================
+### 1. CREATE EVENT
+### ============================================
+
+### POST /events
+# Description: Creates a new event in the system.
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+  "name": "Taller de React Avanzado",
+  "description": "Aprende las mejores prácticas de React con hooks, context y performance",
+  "eventType": "SINGLE",
+  "startDate": "2025-10-15T00:00:00.000Z",
+  "endDate": "2025-10-15T00:00:00.000Z",
+  "startTime": "09:00",
+  "endTime": "17:00",
+  "sessionDurationMinutes": 480,
+  "location": "Aula 101 - Edificio de Ingeniería",
+  "isPublic": true,
+  "maxParticipants": 30,
+  "organizerType": "USER",
+  "organizerUserId": "user-uuid-here"
+}
+
+### POST /events
+# Description: Creates a new course event in the system.
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+  "name": "Curso de Machine Learning",
+  "description": "Curso completo de Machine Learning desde cero hasta proyectos avanzados",
+  "eventType": "COURSE",
+  "startDate": "2025-11-15T00:00:00.000Z",
+  "endDate": "2025-11-20T00:00:00.000Z",
+  "startTime": "09:00",
+  "endTime": "12:00",
+  "sessionDurationMinutes": 180,
+  "location": "Laboratorio de Computación",
+  "isPublic": true,
+  "maxParticipants": 25,
+  "organizerType": "DIVISION",
+  "organizerDivisionId": "division-uuid-here"
+}
+
+### POST /events
+# Description: Creates a new workshop event in the system.
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+  "name": "Workshop de Docker y Kubernetes",
+  "description": "Aprende containerización y orquestación de aplicaciones",
+  "eventType": "WORKSHOP",
+  "startDate": "2024-04-01T00:00:00.000Z",
+  "endDate": "2024-04-03T00:00:00.000Z",
+  "startTime": "14:00",
+  "endTime": "18:00",
+  "sessionDurationMinutes": 240,
+  "location": "Sala de Conferencias",
+  "isPublic": true,
+  "maxParticipants": 20,
+  "organizerType": "CLUB",
+  "organizerClubId": "club-uuid-here",
+}
+
+### POST /events
+# Description: Creates a new recurring event in the system.
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+  "name": "Reunión Semanal del Equipo",
+  "description": "Reunión de seguimiento semanal del proyecto",
+  "eventType": "RECURRING",
+  "startTime": "09:00",
+  "endTime": "10:00",
+  "sessionDurationMinutes": 60,
+  "location": "Sala de Juntas Virtual",
+  "isPublic": false,
+  "maxParticipants": 15,
+  "organizerType": "USER",
+  "organizerUserId": "user-uuid-here",
+  "isRecurring": true,
+  "recurrencePattern": "WEEKLY",
+  "recurrenceInterval": 1,
+  "recurrenceStartDate": "2025-10-15T00:00:00.000Z",
+  "recurrenceEndDate": "2025-12-15T00:00:00.000Z"
+}
+
+### POST /events
+# Description: Creates a new custom recurring event in the system.
+POST {{baseUrl}}/events
+Content-Type: application/json
+
+{
+  "name": "Clases de Programación",
+  "description": "Clases de programación los lunes, miércoles y viernes",
+  "eventType": "RECURRING",
+  "startTime": "16:00",
+  "endTime": "18:00",
+  "sessionDurationMinutes": 120,
+  "location": "Aula 205",
+  "isPublic": true,
+  "maxParticipants": 40,
+  "organizerType": "EXTERNAL",
+  "externalOrganizerName": "Academia de Programación XYZ",
+  "isRecurring": true,
+  "recurrencePattern": "CUSTOM",
+  "recurrenceDays": "1,3,5",
+  "recurrenceStartDate": "2025-10-15T00:00:00.000Z",
+  "recurrenceEndDate": "2024-12-15T00:00:00.000Z"
+}
+
+### ============================================
+### 2. GET EVENTS
+### ============================================
+
+### GET /events
+# Description: Retrieves all events in the system.
+GET {{baseUrl}}/events
+
+### GET /events
+# Description: Retrieves events with pagination in the system.
+GET {{baseUrl}}/events?page=1&limit=5
+
+### GET /events
+# Description: Retrieves events with custom pagination and sorting.
+GET {{baseUrl}}/events?page=2&limit=10&sort={"createdAt":-1}
+
+### GET /events
+# Description: Retrieves events with maximum limit.
+GET {{baseUrl}}/events?page=1&limit=100
+
+### GET /events
+# Description: Retrieves events by status in the system.
+GET {{baseUrl}}/events?status=PUBLISHED
+
+### GET /events
+# Description: Retrieves events by type in the system.
+GET {{baseUrl}}/events?eventType=SINGLE
+
+### GET /events
+# Description: Retrieves events by date range in the system.
+GET {{baseUrl}}/events?startDate=2024-03-01T00:00:00.000Z&endDate=2024-03-31T23:59:59.999Z
+
+### GET /events
+# Description: Retrieves public events in the system.
+GET {{baseUrl}}/events/public
+
+### GET /events
+# Description: Retrieves upcoming events in the system.
+GET {{baseUrl}}/events/upcoming
+
+### GET /events
+# Description: Retrieves my events in the system.
+GET {{baseUrl}}/events/my-events
+
+### GET /events
+# Description: Retrieves events by organizer in the system.
+GET {{baseUrl}}/events?organizerType=USER&organizerId=user-uuid-here
+
+### ============================================
+### 3. GET SPECIFIC EVENT
+### ============================================
+
+### GET /events
+# Description: Retrieves an event by ID in the system.
+GET {{baseUrl}}/events/event-uuid-here
+
+### GET /events
+# Description: Retrieves an event with sessions in the system.
+GET {{baseUrl}}/events/event-uuid-here?includeSessions=true
+
+### GET /events
+# Description: Retrieves an event with attendees in the system.
+GET {{baseUrl}}/events/event-uuid-here?includeAttendees=true
+
+### GET /events
+# Description: Retrieves an event with statistics in the system.
+GET {{baseUrl}}/events/event-uuid-here?includeStatistics=true
+
+### ============================================
+### 4. UPDATE EVENT
+### ============================================
+
+### PUT /events
+# Description: Updates an event basic info in the system.
+PUT {{baseUrl}}/events/event-uuid-here
+Content-Type: application/json
+
+{
+  "name": "Taller de React Avanzado - Actualizado",
+  "description": "Descripción actualizada del taller",
+  "location": "Nueva ubicación - Aula 201"
+}
+
+### PUT /events
+# Description: Updates an event status in the system.
+PUT {{baseUrl}}/events/event-uuid-here
+Content-Type: application/json
+
+{
+  "status": "PUBLISHED"
+}
+
+### PUT /events
+# Description: Updates an event schedule in the system.
+PUT {{baseUrl}}/events/event-uuid-here
+Content-Type: application/json
+
+{
+  "startDate": "2024-03-20T00:00:00.000Z",
+  "endDate": "2024-03-20T00:00:00.000Z",
+  "startTime": "10:00",
+  "endTime": "18:00"
+}
+
+### PUT /events
+# Description: Updates an event participants limit in the system.
+PUT {{baseUrl}}/events/event-uuid-here
+Content-Type: application/json
+
+{
+  "maxParticipants": 50
+}
+
+### ============================================
+### 5. DELETE EVENT
+### ============================================
+
+### DELETE /events
+# Description: Deletes an event in the system.
+DELETE {{baseUrl}}/events/event-uuid-here
+
+### ============================================
+### 6. EVENT REGISTRATION
+### ============================================
+
+### POST /events
+# Description: Registers for an event in the system.
+POST {{baseUrl}}/events/event-uuid-here/register
+
+### POST /events
+# Description: Cancels an event registration in the system.
+POST {{baseUrl}}/events/event-uuid-here/cancel
