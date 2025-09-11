@@ -75,6 +75,9 @@ export class SignupUseCase {
 
       const createdUser = await this.userRepository.create(userData);
 
+      // Assign default role to user
+      await this.userRepository.assignRole(createdUser.id, defaultRole.id);
+
       // Send verification email
       await this.mailService.sendVerificationEmail(
         createdUser.email,
