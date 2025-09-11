@@ -4,32 +4,32 @@ import logger from "../../logger";
 export async function seedDivisions() {
   const divisions = [
     {
-      name: "software",
+      name: "Software",
       description:
         "División de Software - Desarrollo de aplicaciones, sistemas y soluciones tecnológicas",
     },
     {
-      name: "robotics",
+      name: "Robotics",
       description:
         "División de Robótica - Diseño, construcción y programación de robots y sistemas automatizados",
     },
     {
-      name: "artificial_intelligence",
+      name: "Artificial Intelligence",
       description:
         "División de Inteligencia Artificial - Machine Learning, Deep Learning y algoritmos inteligentes",
     },
     {
-      name: "cybersecurity",
+      name: "Cybersecurity",
       description:
         "División de Ciberseguridad - Protección de sistemas, redes y datos contra amenazas digitales",
     },
     {
-      name: "dep_ops",
+      name: "Dep Ops",
       description:
         "Departamento de Operaciones - Operaciones administrativas, gestión y coordinación organizacional",
     },
     {
-      name: "video_games",
+      name: "Video Games",
       description:
         "División de Videojuegos - Desarrollo, diseño y análisis de videojuegos, game jams y competencias",
     },

@@ -4,7 +4,7 @@ import logger from "../../logger";
 export async function seedClubs() {
   const clubs = [
     {
-      name: "videogames",
+      name: "Video Games",
       description:
         "Club de Videojuegos - Club para jugar videojuegos y participar en competencias",
     },
