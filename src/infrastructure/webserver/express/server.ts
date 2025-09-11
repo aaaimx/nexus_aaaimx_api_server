@@ -51,9 +51,10 @@ app.use(`/api/v${Config.apiVersion}/health`, healthCheckRoutes);
 app.use(globalRateLimiter);
 
 // Routes
-import { authRoutes, accountRoutes } from "@/interfaces/routes";
+import { authRoutes, accountRoutes, eventRoutes } from "@/interfaces/routes";
 app.use(`/api/v${Config.apiVersion}/auth`, authRoutes);
 app.use(`/api/v${Config.apiVersion}/account`, accountRoutes);
+app.use(`/api/v${Config.apiVersion}/events`, eventRoutes);
 
 // Swagger documentation
 const swaggerSpec = swaggerJsdoc(Config.swaggerConfig);
