@@ -41,11 +41,11 @@ export class DivisionController {
       });
 
       if (error instanceof AppException) {
-        res.status(error.statusCode).json({
+        res.status(error.status).json({
           success: false,
           message: error.message,
           data: null,
-          status: error.statusCode,
+          status: error.status,
         });
         return;
       }

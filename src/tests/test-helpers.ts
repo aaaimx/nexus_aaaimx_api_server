@@ -1,7 +1,9 @@
 import { User } from "@/domain/entities/user.entity";
 import { Role } from "@/domain/entities/role.entity";
+import { Division } from "@/domain/entities/division.entity";
 import { IUserRepository } from "@/domain/repositories/user.repository";
 import { IRoleRepository } from "@/domain/repositories/role.repository";
+import { IDivisionRepository } from "@/domain/repositories/division.repository";
 import { JwtService } from "@/infrastructure/external-services";
 import { PasswordService } from "@/infrastructure/external-services";
 import { VerificationCodeService } from "@/infrastructure/external-services";
@@ -29,6 +31,21 @@ export function createMockRole(overrides: Partial<Role> = {}): Role {
     id: "role-123",
     name: "member",
     description: "Default member role",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    ...overrides,
+  };
+}
+
+export function createMockDivision(
+  overrides: Partial<Division> = {}
+): Division {
+  return {
+    id: "division-123",
+    name: "Software",
+    description:
+      "División de Software - Desarrollo de aplicaciones, sistemas y soluciones tecnológicas",
+    logoUrl: "https://example.com/logo.png",
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
     ...overrides,
@@ -80,6 +97,14 @@ export function createMockRoleRepository(): jest.Mocked<IRoleRepository> {
   };
 }
 
+export function createMockDivisionRepository(): jest.Mocked<IDivisionRepository> {
+  return {
+    findAll: jest.fn(),
+    findById: jest.fn(),
+    findByName: jest.fn(),
+  };
+}
+
 export function createMockJwtService(): jest.Mocked<JwtService> {
   return {
     generateAccessToken: jest.fn().mockReturnValue("mock-access-token"),
@@ -107,12 +132,10 @@ export function createMockPasswordService(): jest.Mocked<PasswordService> {
 
 export function createMockVerificationCodeService(): jest.Mocked<VerificationCodeService> {
   return {
-    generateCode: jest
-      .fn()
-      .mockReturnValue({
-        code: "123456",
-        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
-      }),
+    generateCode: jest.fn().mockReturnValue({
+      code: "123456",
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    }),
     validateCode: jest.fn().mockReturnValue(true),
     isExpired: jest.fn().mockReturnValue(false),
   };
