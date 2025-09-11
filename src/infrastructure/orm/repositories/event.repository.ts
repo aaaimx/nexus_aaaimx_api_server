@@ -5,6 +5,11 @@ import {
   EventAttendee,
 } from "@/domain/entities/event.entity";
 import { IEventRepository } from "@/domain/repositories/event.repository";
+import {
+  EVENT_STATUS,
+  ORGANIZER_TYPE,
+  ATTENDEE_STATUS,
+} from "@/shared/constants";
 import AppException from "@/shared/utils/exception.util";
 
 export class EventRepository implements IEventRepository {
@@ -257,11 +262,11 @@ export class EventRepository implements IEventRepository {
     try {
       const whereClause: any = { organizer_type: organizerType as any };
 
-      if (organizerType === "USER") {
+      if (organizerType === ORGANIZER_TYPE.USER) {
         whereClause.organizer_user_id = organizerId;
-      } else if (organizerType === "DIVISION") {
+      } else if (organizerType === ORGANIZER_TYPE.DIVISION) {
         whereClause.organizer_division_id = organizerId;
-      } else if (organizerType === "CLUB") {
+      } else if (organizerType === ORGANIZER_TYPE.CLUB) {
         whereClause.organizer_club_id = organizerId;
       }
 
@@ -289,7 +294,7 @@ export class EventRepository implements IEventRepository {
       const events = await this.prisma.events.findMany({
         where: {
           is_public: true,
-          status: { in: ["PUBLISHED", "ONLINE"] },
+          status: { in: [EVENT_STATUS.PUBLISHED, EVENT_STATUS.ONLINE] },
         },
         include: {
           organizer_user: true,
@@ -317,7 +322,7 @@ export class EventRepository implements IEventRepository {
             { start_date: { gte: now } },
             { recurrence_start_date: { gte: now } },
           ],
-          status: { in: ["PUBLISHED", "ONLINE"] },
+          status: { in: [EVENT_STATUS.PUBLISHED, EVENT_STATUS.ONLINE] },
         },
         include: {
           organizer_user: true,
@@ -507,7 +512,7 @@ export class EventRepository implements IEventRepository {
         data: {
           user_id: attendee.userId!,
           event_id: attendee.eventId!,
-          status: attendee.status || "REGISTERED",
+          status: attendee.status || ATTENDEE_STATUS.REGISTERED,
         },
       });
 
@@ -622,7 +627,7 @@ export class EventRepository implements IEventRepository {
       return await this.prisma.event_attendees.count({
         where: {
           event_id: eventId,
-          status: "REGISTERED",
+          status: ATTENDEE_STATUS.REGISTERED,
         },
       });
     } catch (error) {
@@ -637,7 +642,7 @@ export class EventRepository implements IEventRepository {
     try {
       const events = await this.prisma.events.findMany({
         where: {
-          status: { in: ["PUBLISHED", "ONLINE"] },
+          status: { in: [EVENT_STATUS.PUBLISHED, EVENT_STATUS.ONLINE] },
           OR: [
             { max_participants: null },
             {
@@ -646,7 +651,7 @@ export class EventRepository implements IEventRepository {
                 {
                   attendees: {
                     some: {
-                      status: "REGISTERED",
+                      status: ATTENDEE_STATUS.REGISTERED,
                     },
                   },
                 },
@@ -839,11 +844,11 @@ export class EventRepository implements IEventRepository {
     try {
       const whereClause: any = { organizer_type: organizerType as any };
 
-      if (organizerType === "USER") {
+      if (organizerType === ORGANIZER_TYPE.USER) {
         whereClause.organizer_user_id = organizerId;
-      } else if (organizerType === "DIVISION") {
+      } else if (organizerType === ORGANIZER_TYPE.DIVISION) {
         whereClause.organizer_division_id = organizerId;
-      } else if (organizerType === "CLUB") {
+      } else if (organizerType === ORGANIZER_TYPE.CLUB) {
         whereClause.organizer_club_id = organizerId;
       }
 

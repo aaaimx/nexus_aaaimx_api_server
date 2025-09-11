@@ -1,4 +1,9 @@
 import { z } from "zod";
+import {
+  EVENT_TYPE,
+  ORGANIZER_TYPE,
+  RECURRENCE_PATTERN,
+} from "@/shared/constants";
 
 export const CreateEventSchema = z
   .object({
@@ -7,7 +12,7 @@ export const CreateEventSchema = z
       .min(1, "Event name is required")
       .max(255, "Event name too long"),
     description: z.string().optional(),
-    eventType: z.enum(["SINGLE", "COURSE", "WORKSHOP", "RECURRING"], {
+    eventType: z.enum(Object.values(EVENT_TYPE) as [string, ...string[]], {
       message: "Invalid event type",
     }),
     startDate: z
@@ -33,9 +38,12 @@ export const CreateEventSchema = z
     location: z.string().max(500, "Location too long").optional(),
     isPublic: z.boolean().optional().default(true),
     maxParticipants: z.number().int().min(1).optional(),
-    organizerType: z.enum(["USER", "DIVISION", "CLUB", "EXTERNAL"], {
-      message: "Invalid organizer type",
-    }),
+    organizerType: z.enum(
+      Object.values(ORGANIZER_TYPE) as [string, ...string[]],
+      {
+        message: "Invalid organizer type",
+      }
+    ),
     organizerUserId: z.string().uuid("Invalid user ID").optional(),
     organizerDivisionId: z.string().uuid("Invalid division ID").optional(),
     organizerClubId: z.string().uuid("Invalid club ID").optional(),
@@ -46,7 +54,7 @@ export const CreateEventSchema = z
       .optional(),
     isRecurring: z.boolean().optional().default(false),
     recurrencePattern: z
-      .enum(["DAILY", "WEEKLY", "MONTHLY", "CUSTOM"])
+      .enum(Object.values(RECURRENCE_PATTERN) as [string, ...string[]])
       .optional(),
     recurrenceInterval: z.number().int().min(1).optional(),
     recurrenceStartDate: z
@@ -64,16 +72,22 @@ export const CreateEventSchema = z
   .refine(
     (data) => {
       // Validate organizer fields based on organizer type
-      if (data.organizerType === "USER" && !data.organizerUserId) {
+      if (data.organizerType === ORGANIZER_TYPE.USER && !data.organizerUserId) {
         return false;
       }
-      if (data.organizerType === "DIVISION" && !data.organizerDivisionId) {
+      if (
+        data.organizerType === ORGANIZER_TYPE.DIVISION &&
+        !data.organizerDivisionId
+      ) {
         return false;
       }
-      if (data.organizerType === "CLUB" && !data.organizerClubId) {
+      if (data.organizerType === ORGANIZER_TYPE.CLUB && !data.organizerClubId) {
         return false;
       }
-      if (data.organizerType === "EXTERNAL" && !data.externalOrganizerName) {
+      if (
+        data.organizerType === ORGANIZER_TYPE.EXTERNAL &&
+        !data.externalOrganizerName
+      ) {
         return false;
       }
       return true;
@@ -113,7 +127,7 @@ export const CreateEventSchema = z
     (data) => {
       // Validate SINGLE event rules
       if (
-        data.eventType === "SINGLE" &&
+        data.eventType === EVENT_TYPE.SINGLE &&
         data.startDate &&
         data.endDate &&
         data.startDate.getTime() !== data.endDate.getTime()

@@ -1,5 +1,6 @@
 import { IEventRepository } from "@/domain/repositories/event.repository";
 import { EventAttendee } from "@/domain/entities/event.entity";
+import { ATTENDEE_STATUS } from "@/shared/constants";
 import AppException from "@/shared/utils/exception.util";
 
 export interface CancelEventRegistrationInput {
@@ -36,7 +37,7 @@ export class CancelEventRegistrationUseCase {
         throw new AppException("User is not registered for this event", 400);
       }
 
-      if (existingAttendance.status === "CANCELLED") {
+      if (existingAttendance.status === ATTENDEE_STATUS.CANCELLED) {
         throw new AppException(
           "User has already cancelled their registration",
           400
@@ -46,7 +47,7 @@ export class CancelEventRegistrationUseCase {
       // Update attendance status to cancelled
       const attendance = await this.eventRepository.updateEventAttendee(
         existingAttendance.id,
-        { status: "CANCELLED" }
+        { status: ATTENDEE_STATUS.CANCELLED }
       );
 
       return {

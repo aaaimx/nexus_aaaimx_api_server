@@ -1,5 +1,5 @@
-import { User } from "@/domain/entities/user.entity";
 import { IUserRepository } from "@/domain/repositories/user.repository";
+import { UserMapper } from "@/domain/mappers/user.mapper";
 import { DefaultRoleService } from "@/application/services/auth";
 import { UserValidationService } from "@/application/services/auth";
 import {
@@ -57,21 +57,14 @@ export class SignupUseCase {
       const verificationCode = this.verificationCodeService.generateCode();
 
       // Create user
-      const userData: Partial<User> = {
-        firstName: input.first_name,
-        lastName: input.last_name,
-        email: input.email,
+      const userData = UserMapper.mapToUserData(input, {
         password: hashedPassword,
         isEmailVerified: false,
         isActive: true,
         allowNotifications: true,
         verificationCode: verificationCode.code,
         verificationExpires: verificationCode.expiresAt,
-      };
-
-      if (input.bio !== undefined) {
-        userData.bio = input.bio;
-      }
+      });
 
       const createdUser = await this.userRepository.create(userData);
 
@@ -86,25 +79,9 @@ export class SignupUseCase {
       );
 
       // Return user data (without password)
-      const result: SignupOutput = {
-        id: createdUser.id,
-        firstName: createdUser.firstName!,
-        lastName: createdUser.lastName!,
-        email: createdUser.email,
-        birthDate: input.birth_date, // Store this in a separate table if needed
-        emailVerified: createdUser.isEmailVerified,
+      const result = UserMapper.mapToUserOutput(createdUser, input, {
         roleId: defaultRole.id,
-        createdAt: createdUser.createdAt,
-        updatedAt: createdUser.updatedAt,
-      };
-
-      if (createdUser.bio !== undefined) {
-        result.bio = createdUser.bio;
-      }
-
-      if (createdUser.photoUrl !== undefined) {
-        result.photoUrl = createdUser.photoUrl;
-      }
+      }) as SignupOutput;
 
       return result;
     } catch (error) {

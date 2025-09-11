@@ -2,15 +2,22 @@ import { IEventRepository } from "@/domain/repositories/event.repository";
 import { IUserRepository } from "@/domain/repositories/user.repository";
 import { IRoleRepository } from "@/domain/repositories/role.repository";
 import { Event } from "@/domain/entities/event.entity";
+import { EventMapper } from "@/domain/mappers/event.mapper";
 import { EventValidationService } from "@/application/services/event/event-validation.service";
 import { EventBusinessService } from "@/application/services/event/event-business.service";
 import { RoleValidationService } from "@/application/services/auth/role-validation.service";
+import {
+  EVENT_STATUS,
+  EVENT_TYPE,
+  ORGANIZER_TYPE,
+  RECURRENCE_PATTERN,
+} from "@/shared/constants";
 import AppException from "@/shared/utils/exception.util";
 
 export interface CreateEventInput {
   name: string;
   description?: string;
-  eventType: "SINGLE" | "COURSE" | "WORKSHOP" | "RECURRING";
+  eventType: keyof typeof EVENT_TYPE;
   startDate?: Date;
   endDate?: Date;
   startTime?: string;
@@ -20,13 +27,13 @@ export interface CreateEventInput {
   location?: string;
   isPublic?: boolean;
   maxParticipants?: number;
-  organizerType: "USER" | "DIVISION" | "CLUB" | "EXTERNAL";
+  organizerType: keyof typeof ORGANIZER_TYPE;
   organizerUserId?: string;
   organizerDivisionId?: string;
   organizerClubId?: string;
   externalOrganizerName?: string;
   isRecurring?: boolean;
-  recurrencePattern?: "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM";
+  recurrencePattern?: keyof typeof RECURRENCE_PATTERN;
   recurrenceInterval?: number;
   recurrenceStartDate?: Date;
   recurrenceEndDate?: Date;
@@ -71,48 +78,12 @@ export class CreateEventUseCase {
       await this.eventValidationService.validateNoConflicts(input);
 
       // Create event - only include defined values
-      const eventData: Partial<Event> = {
+      const eventData = EventMapper.mapToEventData(input, {
         name: input.name,
-        status: "DRAFT",
-        eventType: input.eventType,
+        status: EVENT_STATUS.DRAFT,
+        eventType: EVENT_TYPE[input.eventType],
         userId: input.userId,
-      };
-
-      if (input.description !== undefined)
-        eventData.description = input.description;
-      if (input.startDate !== undefined) eventData.startDate = input.startDate;
-      if (input.endDate !== undefined) eventData.endDate = input.endDate;
-      if (input.startTime !== undefined) eventData.startTime = input.startTime;
-      if (input.endTime !== undefined) eventData.endTime = input.endTime;
-      if (input.sessionDurationMinutes !== undefined)
-        eventData.sessionDurationMinutes = input.sessionDurationMinutes;
-      if (input.coverUrl !== undefined) eventData.coverUrl = input.coverUrl;
-      if (input.location !== undefined) eventData.location = input.location;
-      if (input.isPublic !== undefined) eventData.isPublic = input.isPublic;
-      if (input.maxParticipants !== undefined)
-        eventData.maxParticipants = input.maxParticipants;
-      if (input.organizerType !== undefined)
-        eventData.organizerType = input.organizerType;
-      if (input.organizerUserId !== undefined)
-        eventData.organizerUserId = input.organizerUserId;
-      if (input.organizerDivisionId !== undefined)
-        eventData.organizerDivisionId = input.organizerDivisionId;
-      if (input.organizerClubId !== undefined)
-        eventData.organizerClubId = input.organizerClubId;
-      if (input.externalOrganizerName !== undefined)
-        eventData.externalOrganizerName = input.externalOrganizerName;
-      if (input.isRecurring !== undefined)
-        eventData.isRecurring = input.isRecurring;
-      if (input.recurrencePattern !== undefined)
-        eventData.recurrencePattern = input.recurrencePattern;
-      if (input.recurrenceInterval !== undefined)
-        eventData.recurrenceInterval = input.recurrenceInterval;
-      if (input.recurrenceStartDate !== undefined)
-        eventData.recurrenceStartDate = input.recurrenceStartDate;
-      if (input.recurrenceEndDate !== undefined)
-        eventData.recurrenceEndDate = input.recurrenceEndDate;
-      if (input.recurrenceDays !== undefined)
-        eventData.recurrenceDays = input.recurrenceDays;
+      });
 
       const event = await this.eventRepository.create(eventData);
 

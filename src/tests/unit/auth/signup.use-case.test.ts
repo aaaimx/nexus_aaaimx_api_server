@@ -159,7 +159,6 @@ describe("SignupUseCase", () => {
         lastName: inputWithoutBio.last_name,
         email: inputWithoutBio.email,
         password: hashedPassword,
-        bio: undefined,
         isEmailVerified: false,
         isActive: true,
         allowNotifications: true,

@@ -1,6 +1,7 @@
 import { IEventRepository } from "@/domain/repositories/event.repository";
 import { EventAttendee } from "@/domain/entities/event.entity";
 import { EventBusinessService } from "@/application/services/event/event-business.service";
+import { ATTENDEE_STATUS } from "@/shared/constants";
 import AppException from "@/shared/utils/exception.util";
 
 export interface RegisterForEventInput {
@@ -48,14 +49,14 @@ export class RegisterForEventUseCase {
         // Update existing attendance to registered
         attendance = await this.eventRepository.updateEventAttendee(
           existingAttendance.id,
-          { status: "REGISTERED" }
+          { status: ATTENDEE_STATUS.REGISTERED }
         );
       } else {
         // Create new attendance
         attendance = await this.eventRepository.createEventAttendee({
           userId: input.userId,
           eventId: input.eventId,
-          status: "REGISTERED",
+          status: ATTENDEE_STATUS.REGISTERED,
         });
       }
 

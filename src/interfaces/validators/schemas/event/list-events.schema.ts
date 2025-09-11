@@ -1,11 +1,18 @@
 import { z } from "zod";
+import { EVENT_STATUS, EVENT_TYPE, ORGANIZER_TYPE } from "@/shared/constants";
 
 export const ListEventsSchema = z
   .object({
     userId: z.string().uuid("Invalid user ID").optional(),
-    status: z.enum(["DRAFT", "PUBLISHED", "ARCHIVED", "ONLINE"]).optional(),
-    eventType: z.enum(["SINGLE", "COURSE", "WORKSHOP", "RECURRING"]).optional(),
-    organizerType: z.enum(["USER", "DIVISION", "CLUB", "EXTERNAL"]).optional(),
+    status: z
+      .enum(Object.values(EVENT_STATUS) as [string, ...string[]])
+      .optional(),
+    eventType: z
+      .enum(Object.values(EVENT_TYPE) as [string, ...string[]])
+      .optional(),
+    organizerType: z
+      .enum(Object.values(ORGANIZER_TYPE) as [string, ...string[]])
+      .optional(),
     organizerId: z.string().uuid("Invalid organizer ID").optional(),
     isPublic: z.boolean().optional(),
     upcomingOnly: z.boolean().optional(),

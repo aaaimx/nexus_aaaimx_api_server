@@ -1,7 +1,14 @@
 import { IEventRepository } from "@/domain/repositories/event.repository";
 import { Event } from "@/domain/entities/event.entity";
+import { EventMapper } from "@/domain/mappers/event.mapper";
 import { EventValidationService } from "@/application/services/event/event-validation.service";
 import { EventBusinessService } from "@/application/services/event/event-business.service";
+import {
+  EVENT_STATUS,
+  EVENT_TYPE,
+  ORGANIZER_TYPE,
+  RECURRENCE_PATTERN,
+} from "@/shared/constants";
 import AppException from "@/shared/utils/exception.util";
 
 export interface UpdateEventInput {
@@ -9,8 +16,8 @@ export interface UpdateEventInput {
   userId: string;
   name?: string;
   description?: string;
-  status?: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "ONLINE";
-  eventType?: "SINGLE" | "COURSE" | "WORKSHOP" | "RECURRING";
+  status?: keyof typeof EVENT_STATUS;
+  eventType?: keyof typeof EVENT_TYPE;
   startDate?: Date;
   endDate?: Date;
   startTime?: string;
@@ -20,13 +27,13 @@ export interface UpdateEventInput {
   location?: string;
   isPublic?: boolean;
   maxParticipants?: number;
-  organizerType?: "USER" | "DIVISION" | "CLUB" | "EXTERNAL";
+  organizerType?: keyof typeof ORGANIZER_TYPE;
   organizerUserId?: string | null;
   organizerDivisionId?: string | null;
   organizerClubId?: string | null;
   externalOrganizerName?: string | null;
   isRecurring?: boolean;
-  recurrencePattern?: "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM";
+  recurrencePattern?: keyof typeof RECURRENCE_PATTERN;
   recurrenceInterval?: number;
   recurrenceStartDate?: Date;
   recurrenceEndDate?: Date;
@@ -69,51 +76,7 @@ export class UpdateEventUseCase {
       );
 
       // Prepare update data - only include defined values
-      const updateData: Partial<Event> = {};
-
-      if (input.name !== undefined) updateData.name = input.name;
-      if (input.description !== undefined)
-        updateData.description = input.description;
-      if (input.status !== undefined) updateData.status = input.status;
-      if (input.eventType !== undefined) updateData.eventType = input.eventType;
-      if (input.startDate !== undefined) updateData.startDate = input.startDate;
-      if (input.endDate !== undefined) updateData.endDate = input.endDate;
-      if (input.startTime !== undefined) updateData.startTime = input.startTime;
-      if (input.endTime !== undefined) updateData.endTime = input.endTime;
-      if (input.sessionDurationMinutes !== undefined)
-        updateData.sessionDurationMinutes = input.sessionDurationMinutes;
-      if (input.coverUrl !== undefined) updateData.coverUrl = input.coverUrl;
-      if (input.location !== undefined) updateData.location = input.location;
-      if (input.isPublic !== undefined) updateData.isPublic = input.isPublic;
-      if (input.maxParticipants !== undefined)
-        updateData.maxParticipants = input.maxParticipants;
-      if (input.organizerType !== undefined)
-        updateData.organizerType = input.organizerType;
-      if (input.organizerUserId !== undefined)
-        updateData.organizerUserId = input.organizerUserId;
-      if (input.organizerDivisionId !== undefined)
-        updateData.organizerDivisionId = input.organizerDivisionId;
-      if (input.organizerClubId !== undefined)
-        updateData.organizerClubId = input.organizerClubId;
-      if (input.externalOrganizerName !== undefined)
-        updateData.externalOrganizerName = input.externalOrganizerName;
-      if (input.isRecurring !== undefined)
-        updateData.isRecurring = input.isRecurring;
-      if (input.recurrencePattern !== undefined)
-        updateData.recurrencePattern = input.recurrencePattern;
-      if (input.recurrenceInterval !== undefined)
-        updateData.recurrenceInterval = input.recurrenceInterval;
-      if (input.recurrenceStartDate !== undefined)
-        updateData.recurrenceStartDate = input.recurrenceStartDate;
-      if (input.recurrenceEndDate !== undefined)
-        updateData.recurrenceEndDate = input.recurrenceEndDate;
-      if (input.recurrenceDays !== undefined)
-        updateData.recurrenceDays = input.recurrenceDays;
-
-      // Remove undefined values
-      const filteredData = Object.fromEntries(
-        Object.entries(updateData).filter(([_, value]) => value !== undefined)
-      );
+      const filteredData = EventMapper.mapToEventData(input);
 
       // Validate updated data - only validate if there are changes
       if (Object.keys(filteredData).length > 0) {

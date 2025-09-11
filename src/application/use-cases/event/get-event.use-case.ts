@@ -43,26 +43,37 @@ export class GetEventUseCase {
 
       const output: GetEventOutput = { event };
 
-      // Include sessions if requested
-      if (input.includeSessions) {
-        output.sessions = await this.eventRepository.findEventSessions(
-          input.eventId
-        );
-      }
+      const includeHandlers = {
+        sessions: async () => {
+          output.sessions = await this.eventRepository.findEventSessions(
+            input.eventId
+          );
+        },
+        attendees: async () => {
+          output.attendees = await this.eventRepository.findEventAttendees(
+            input.eventId
+          );
+        },
+        statistics: async () => {
+          output.statistics =
+            await this.eventBusinessService.getEventStatistics(input.eventId);
+        },
+      };
 
-      // Include attendees if requested
-      if (input.includeAttendees) {
-        output.attendees = await this.eventRepository.findEventAttendees(
-          input.eventId
-        );
-      }
+      const includeOptions = {
+        sessions: input.includeSessions,
+        attendees: input.includeAttendees,
+        statistics: input.includeStatistics,
+      };
 
-      // Include statistics if requested
-      if (input.includeStatistics) {
-        output.statistics = await this.eventBusinessService.getEventStatistics(
-          input.eventId
-        );
-      }
+      // Execute requested includes
+      await Promise.all(
+        Object.entries(includeOptions)
+          .filter(([_, shouldInclude]) => shouldInclude)
+          .map(([key, _]) =>
+            includeHandlers[key as keyof typeof includeHandlers]()
+          )
+      );
 
       return output;
     } catch (error) {

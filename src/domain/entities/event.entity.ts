@@ -1,9 +1,17 @@
+import {
+  EventStatus,
+  EventType,
+  RecurrencePattern,
+  OrganizerType,
+  AttendeeStatus,
+} from "@/shared/constants";
+
 export interface Event {
   id: string;
   name: string;
   description?: string;
-  status: "DRAFT" | "PUBLISHED" | "ARCHIVED" | "ONLINE";
-  eventType: "SINGLE" | "COURSE" | "WORKSHOP" | "RECURRING";
+  status: EventStatus;
+  eventType: EventType;
 
   // Campos para eventos únicos
   startDate?: Date;
@@ -11,7 +19,7 @@ export interface Event {
 
   // Campos para eventos recurrentes
   isRecurring: boolean;
-  recurrencePattern?: "DAILY" | "WEEKLY" | "MONTHLY" | "CUSTOM";
+  recurrencePattern?: RecurrencePattern;
   recurrenceInterval?: number;
   recurrenceStartDate?: Date;
   recurrenceEndDate?: Date;
@@ -31,7 +39,7 @@ export interface Event {
   updatedAt: Date;
 
   // Organizador polimórfico
-  organizerType: "USER" | "DIVISION" | "CLUB" | "EXTERNAL";
+  organizerType: OrganizerType;
   organizerUserId?: string | null;
   organizerDivisionId?: string | null;
   organizerClubId?: string | null;
@@ -57,7 +65,7 @@ export interface EventAttendee {
   id: string;
   userId: string;
   eventId: string;
-  status: "REGISTERED" | "CANCELLED";
+  status: AttendeeStatus;
   createdAt: Date;
   updatedAt: Date;
 }

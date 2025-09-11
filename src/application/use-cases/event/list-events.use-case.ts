@@ -39,73 +39,60 @@ export class ListEventsUseCase {
       let total: number = 0;
 
       // Determine which query method to use based on filters
-      if (input.userId) {
-        const result = await this.eventRepository.findByUserIdWithPagination(
-          input.userId,
-          skip,
-          limit
-        );
-        events = result.events;
-        total = result.total;
-      } else if (input.status) {
-        const result = await this.eventRepository.findByStatusWithPagination(
-          input.status,
-          skip,
-          limit
-        );
-        events = result.events;
-        total = result.total;
-      } else if (input.eventType) {
-        const result = await this.eventRepository.findByEventTypeWithPagination(
-          input.eventType,
-          skip,
-          limit
-        );
-        events = result.events;
-        total = result.total;
-      } else if (input.organizerType && input.organizerId) {
-        const result = await this.eventRepository.findByOrganizerWithPagination(
-          input.organizerType,
-          input.organizerId,
-          skip,
-          limit
-        );
-        events = result.events;
-        total = result.total;
-      } else if (input.isPublic) {
-        const result =
-          await this.eventRepository.findPublicEventsWithPagination(
+      const queryHandlers = {
+        userId: () =>
+          this.eventRepository.findByUserIdWithPagination(
+            input.userId!,
             skip,
             limit
-          );
-        events = result.events;
-        total = result.total;
-      } else if (input.upcomingOnly) {
-        const result =
-          await this.eventRepository.findUpcomingEventsWithPagination(
+          ),
+        status: () =>
+          this.eventRepository.findByStatusWithPagination(
+            input.status!,
             skip,
             limit
-          );
-        events = result.events;
-        total = result.total;
-      } else if (input.startDate && input.endDate) {
-        const result =
-          await this.eventRepository.findEventsByDateRangeWithPagination(
-            input.startDate,
-            input.endDate,
+          ),
+        eventType: () =>
+          this.eventRepository.findByEventTypeWithPagination(
+            input.eventType!,
             skip,
             limit
-          );
-        events = result.events;
-        total = result.total;
-      } else {
-        const result = await this.eventRepository.findAllWithPagination(
-          skip,
-          limit
-        );
-        events = result.events;
-        total = result.total;
-      }
+          ),
+        organizer: () =>
+          this.eventRepository.findByOrganizerWithPagination(
+            input.organizerType!,
+            input.organizerId!,
+            skip,
+            limit
+          ),
+        isPublic: () =>
+          this.eventRepository.findPublicEventsWithPagination(skip, limit),
+        upcomingOnly: () =>
+          this.eventRepository.findUpcomingEventsWithPagination(skip, limit),
+        dateRange: () =>
+          this.eventRepository.findEventsByDateRangeWithPagination(
+            input.startDate!,
+            input.endDate!,
+            skip,
+            limit
+          ),
+        default: () => this.eventRepository.findAllWithPagination(skip, limit),
+      };
+
+      const getQueryKey = (): keyof typeof queryHandlers => {
+        if (input.userId) return "userId";
+        if (input.status) return "status";
+        if (input.eventType) return "eventType";
+        if (input.organizerType && input.organizerId) return "organizer";
+        if (input.isPublic) return "isPublic";
+        if (input.upcomingOnly) return "upcomingOnly";
+        if (input.startDate && input.endDate) return "dateRange";
+        return "default";
+      };
+
+      const result = await queryHandlers[getQueryKey()]();
+      events = result.events;
+      total = result.total;
 
       // Format result using pagination utility
       return PaginationUtil.formatResult(events, total, page, limit);
