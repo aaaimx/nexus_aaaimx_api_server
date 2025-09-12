@@ -1,9 +1,11 @@
 import { User } from "@/domain/entities/user.entity";
 import { Role } from "@/domain/entities/role.entity";
 import { Division } from "@/domain/entities/division.entity";
+import { Club } from "@/domain/entities/club.entity";
 import { IUserRepository } from "@/domain/repositories/user.repository";
 import { IRoleRepository } from "@/domain/repositories/role.repository";
 import { IDivisionRepository } from "@/domain/repositories/division.repository";
+import { IClubRepository } from "@/domain/repositories/club.repository";
 import { JwtService } from "@/infrastructure/external-services";
 import { PasswordService } from "@/infrastructure/external-services";
 import { VerificationCodeService } from "@/infrastructure/external-services";
@@ -46,6 +48,19 @@ export function createMockDivision(
     description:
       "División de Software - Desarrollo de aplicaciones, sistemas y soluciones tecnológicas",
     logoUrl: "https://example.com/logo.png",
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    ...overrides,
+  };
+}
+
+export function createMockClub(overrides: Partial<Club> = {}): Club {
+  return {
+    id: "club-123",
+    name: "Video Games",
+    description:
+      "Club de Videojuegos - Club para jugar videojuegos y participar en competencias",
+    logoUrl: "https://example.com/club-logo.png",
     createdAt: new Date("2024-01-01"),
     updatedAt: new Date("2024-01-01"),
     ...overrides,
@@ -98,6 +113,14 @@ export function createMockRoleRepository(): jest.Mocked<IRoleRepository> {
 }
 
 export function createMockDivisionRepository(): jest.Mocked<IDivisionRepository> {
+  return {
+    findAll: jest.fn(),
+    findById: jest.fn(),
+    findByName: jest.fn(),
+  };
+}
+
+export function createMockClubRepository(): jest.Mocked<IClubRepository> {
   return {
     findAll: jest.fn(),
     findById: jest.fn(),
