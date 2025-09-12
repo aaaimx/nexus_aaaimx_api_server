@@ -97,6 +97,14 @@ export function createMockUserRepository(): jest.Mocked<IUserRepository> {
     findByVerificationCode: jest.fn(),
     findByResetPasswordCode: jest.fn(),
     getUserRoleId: jest.fn(),
+    findUsersWithRoles: jest.fn(),
+    findUserWithRole: jest.fn(),
+    updateUserRole: jest.fn(),
+    getUserDivisions: jest.fn(),
+    getUserClubs: jest.fn(),
+    findUsersByDivision: jest.fn(),
+    findUsersByClub: jest.fn(),
+    findUsersByRole: jest.fn(),
   };
 }
 
