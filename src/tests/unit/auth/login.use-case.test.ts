@@ -3,7 +3,6 @@ import { IUserRepository } from "@/domain/repositories/user.repository";
 import { JwtService } from "@/infrastructure/external-services";
 import { PasswordService } from "@/infrastructure/external-services";
 import { SessionService } from "@/application/services/auth/session.service";
-import DefaultRoleService from "@/application/services/auth/default-role.service";
 import { User } from "@/domain/entities/user.entity";
 import { Role } from "@/domain/entities/role.entity";
 import AppException from "@/shared/utils/exception.util";
@@ -17,7 +16,6 @@ import {
 } from "@/tests/test-helpers";
 
 // Mock dependencies
-jest.mock("@/application/services/auth/default-role.service");
 jest.mock("@/application/services/auth/session.service");
 
 describe("LoginUseCase", () => {
@@ -26,8 +24,6 @@ describe("LoginUseCase", () => {
   let mockJwtService: jest.Mocked<JwtService>;
   let mockPasswordService: jest.Mocked<PasswordService>;
   let mockSessionService: jest.Mocked<SessionService>;
-  let mockDefaultRoleService: jest.Mocked<DefaultRoleService>;
-
   const mockUser: User = createMockUser({
     password: "hashed-password",
   });
@@ -41,17 +37,12 @@ describe("LoginUseCase", () => {
     mockPasswordService = createMockPasswordService();
     mockSessionService = createMockSessionService();
 
-    mockDefaultRoleService = {
-      getDefaultRole: jest.fn(),
-    } as any;
-
     // Create use case instance
     loginUseCase = new LoginUseCase(
       mockUserRepository,
       mockJwtService,
       mockPasswordService,
-      mockSessionService,
-      mockDefaultRoleService
+      mockSessionService
     );
   });
 
@@ -68,7 +59,7 @@ describe("LoginUseCase", () => {
 
       mockUserRepository.findByEmail.mockResolvedValue(mockUser);
       mockPasswordService.compare.mockResolvedValue(true);
-      mockDefaultRoleService.getDefaultRole.mockResolvedValue(mockRole);
+      mockUserRepository.getUserRoleId.mockResolvedValue(mockRole.id);
       mockJwtService.generateAccessToken.mockReturnValue(accessToken);
       mockJwtService.generateRefreshToken.mockReturnValue(refreshToken);
       mockSessionService.updateLastSessionDate.mockResolvedValue();
@@ -82,7 +73,9 @@ describe("LoginUseCase", () => {
         input.password,
         mockUser.password
       );
-      expect(mockDefaultRoleService.getDefaultRole).toHaveBeenCalled();
+      expect(mockUserRepository.getUserRoleId).toHaveBeenCalledWith(
+        mockUser.id
+      );
       expect(mockJwtService.generateAccessToken).toHaveBeenCalledWith({
         id: mockUser.id,
         email: mockUser.email,
@@ -178,6 +171,19 @@ describe("LoginUseCase", () => {
       // Act & Assert
       await expect(loginUseCase.execute(input)).rejects.toThrow(
         new AppException("Invalid credentials", 401)
+      );
+    });
+
+    it("should throw AppException when user has no role assigned", async () => {
+      // Arrange
+      const input = { email: "test@example.com", password: "password123" };
+      mockUserRepository.findByEmail.mockResolvedValue(mockUser);
+      mockPasswordService.compare.mockResolvedValue(true);
+      mockUserRepository.getUserRoleId.mockResolvedValue(null);
+
+      // Act & Assert
+      await expect(loginUseCase.execute(input)).rejects.toThrow(
+        new AppException("User role not found", 500)
       );
     });
 
