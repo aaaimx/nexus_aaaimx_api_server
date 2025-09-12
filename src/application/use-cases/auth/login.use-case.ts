@@ -2,7 +2,6 @@ import { IUserRepository } from "@/domain/repositories/user.repository";
 import { JwtService } from "@/infrastructure/external-services";
 import { PasswordService } from "@/infrastructure/external-services";
 import { SessionService } from "@/application/services/auth/session.service";
-import DefaultRoleService from "@/application/services/auth/default-role.service";
 import { LoginInput, LoginOutput } from "@/interfaces/types/auth.types";
 import AppException from "@/shared/utils/exception.util";
 
@@ -11,8 +10,7 @@ export class LoginUseCase {
     private readonly userRepository: IUserRepository,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
-    private readonly sessionService: SessionService,
-    private readonly defaultRoleService: DefaultRoleService
+    private readonly sessionService: SessionService
   ) {}
 
   async execute(input: LoginInput): Promise<LoginOutput> {
@@ -50,15 +48,18 @@ export class LoginUseCase {
         throw new AppException("Invalid credentials", 401);
       }
 
-      // Get default role (for now, we'll use the default role)
-      // TODO: Implement proper user role retrieval
-      const defaultRole = await this.defaultRoleService.getDefaultRole();
+      // Get user's actual role
+      const userRoleId = await this.userRepository.getUserRoleId(user.id);
+
+      if (!userRoleId) {
+        throw new AppException("User role not found", 500);
+      }
 
       // Generate tokens
       const tokenPayload = {
         id: user.id,
         email: user.email,
-        roleId: defaultRole.id,
+        roleId: userRoleId,
         emailVerified: user.isEmailVerified,
       };
 
@@ -76,7 +77,7 @@ export class LoginUseCase {
           email: user.email,
           birthDate: null, // TODO: Add birthDate to user entity if needed
           emailVerified: user.isEmailVerified,
-          roleId: defaultRole.id,
+          roleId: userRoleId,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },
