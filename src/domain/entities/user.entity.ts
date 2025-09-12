@@ -17,4 +17,7 @@ export interface User {
   resetPasswordCode?: string;
   resetPasswordExpires?: Date;
   googleId?: string;
+  roleId?: string;
+  divisions?: string[];
+  clubs?: string[];
 }
