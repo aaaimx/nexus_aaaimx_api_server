@@ -2,12 +2,16 @@ import { Request, Response } from "express";
 import { ApiResponse } from "@/shared/utils/api-response.util";
 import logger from "@/infrastructure/logger";
 import { UploadProfilePhotoUseCase } from "@/application/use-cases/account/upload-profile-photo.use-case";
+import { GetAccountUseCase } from "@/application/use-cases/account/get-account.use-case";
+import { UpdateAccountUseCase } from "@/application/use-cases/account/update-account.use-case";
 import { IUserRepository } from "@/domain/repositories/user.repository";
 import { FileStorageService } from "@/infrastructure/external-services";
 import AppException from "@/shared/utils/exception.util";
 
 export class AccountController {
   private uploadProfilePhotoUseCase: UploadProfilePhotoUseCase;
+  private getAccountUseCase: GetAccountUseCase;
+  private updateAccountUseCase: UpdateAccountUseCase;
 
   constructor(
     private readonly userRepository: IUserRepository,
@@ -17,6 +21,8 @@ export class AccountController {
       userRepository,
       fileStorageService
     );
+    this.getAccountUseCase = new GetAccountUseCase(userRepository);
+    this.updateAccountUseCase = new UpdateAccountUseCase(userRepository);
   }
 
   async uploadProfilePhoto(req: Request, res: Response): Promise<void> {
@@ -164,6 +170,122 @@ export class AccountController {
           : "Failed to serve profile photo";
 
       logger.error("Failed to serve profile photo", {
+        error: errorMessage,
+        userId: req.user?.id,
+      });
+
+      const response = new ApiResponse(
+        false,
+        errorMessage,
+        null,
+        error instanceof AppException ? error.status : 500
+      );
+
+      res
+        .status(error instanceof AppException ? error.status : 500)
+        .json(response);
+    }
+  }
+
+  async getAccount(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        const response = new ApiResponse(
+          false,
+          "User not authenticated",
+          null,
+          401
+        );
+        res.status(401).json(response);
+        return;
+      }
+
+      const result = await this.getAccountUseCase.execute({ userId });
+
+      const response = new ApiResponse(
+        true,
+        "Account information retrieved successfully",
+        result,
+        200
+      );
+
+      logger.info("Account information retrieved successfully", {
+        userId,
+      });
+
+      res.status(200).json(response);
+    } catch (error) {
+      const errorMessage =
+        error instanceof AppException
+          ? error.message
+          : "Failed to retrieve account information";
+
+      logger.error("Failed to retrieve account information", {
+        error: errorMessage,
+        userId: req.user?.id,
+      });
+
+      const response = new ApiResponse(
+        false,
+        errorMessage,
+        null,
+        error instanceof AppException ? error.status : 500
+      );
+
+      res
+        .status(error instanceof AppException ? error.status : 500)
+        .json(response);
+    }
+  }
+
+  async updateAccount(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = req.user?.id;
+
+      if (!userId) {
+        const response = new ApiResponse(
+          false,
+          "User not authenticated",
+          null,
+          401
+        );
+        res.status(401).json(response);
+        return;
+      }
+
+      const { firstName, lastName, bio } = req.body;
+
+      const input = {
+        userId,
+        firstName,
+        lastName,
+        bio,
+      };
+
+      const result = await this.updateAccountUseCase.execute(input);
+
+      const response = new ApiResponse(
+        true,
+        "Account information updated successfully",
+        result,
+        200
+      );
+
+      logger.info("Account information updated successfully", {
+        userId,
+        updatedFields: { firstName, lastName, bio },
+      });
+
+      res.status(200).json(response);
+    } catch (error) {
+      const errorMessage =
+        error instanceof AppException
+          ? error.message
+          : "Failed to update account information";
+
+      logger.error("Failed to update account information", {
         error: errorMessage,
         userId: req.user?.id,
       });

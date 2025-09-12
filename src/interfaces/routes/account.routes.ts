@@ -7,6 +7,8 @@ import {
   validateUploadedFile,
   handleMulterError,
 } from "@/interfaces/middlewares/file-upload.middleware";
+import { validateRequest } from "@/interfaces/middlewares/validation.middleware";
+import { UpdateAccountSchema } from "@/interfaces/validators/schemas/account";
 import { PrismaClient } from "@prisma/client";
 import { UserRepository } from "@/infrastructure/orm/repositories";
 import { FileStorageService } from "@/infrastructure/external-services";
@@ -103,6 +105,188 @@ router.get(
   authMiddleware,
   verifiedEmailMiddleware,
   accountController.getProfilePhoto.bind(accountController)
+);
+
+/**
+ * @swagger
+ * /account:
+ *   get:
+ *     summary: Get user account information
+ *     description: Retrieves the authenticated user's account information
+ *     tags: [Account]
+ *     security:
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Account information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     bio:
+ *                       type: string
+ *                     photoUrl:
+ *                       type: string
+ *                     isEmailVerified:
+ *                       type: boolean
+ *                     isActive:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     lastLoginAt:
+ *                       type: string
+ *                       format: date-time
+ *                     allowNotifications:
+ *                       type: boolean
+ *                     roleId:
+ *                       type: string
+ *                     divisions:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     clubs:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *       401:
+ *         description: User not authenticated
+ *       403:
+ *         description: Account is deactivated
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get(
+  "/",
+  authMiddleware,
+  verifiedEmailMiddleware,
+  accountController.getAccount.bind(accountController)
+);
+
+/**
+ * @swagger
+ * /account:
+ *   put:
+ *     summary: Update user account information
+ *     description: Updates the authenticated user's account information (firstName, lastName, bio)
+ *     tags: [Account]
+ *     security:
+ *       - cookieAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 50
+ *                 description: User's first name
+ *               lastName:
+ *                 type: string
+ *                 minLength: 1
+ *                 maxLength: 50
+ *                 description: User's last name
+ *               bio:
+ *                 type: string
+ *                 maxLength: 500
+ *                 description: User's biography
+ *             example:
+ *               firstName: "John"
+ *               lastName: "Doe"
+ *               bio: "Software engineer passionate about clean code"
+ *     responses:
+ *       200:
+ *         description: Account information updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     firstName:
+ *                       type: string
+ *                     lastName:
+ *                       type: string
+ *                     bio:
+ *                       type: string
+ *                     photoUrl:
+ *                       type: string
+ *                     isEmailVerified:
+ *                       type: boolean
+ *                     isActive:
+ *                       type: boolean
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                     lastLoginAt:
+ *                       type: string
+ *                       format: date-time
+ *                     allowNotifications:
+ *                       type: boolean
+ *                     roleId:
+ *                       type: string
+ *                     divisions:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *                     clubs:
+ *                       type: array
+ *                       items:
+ *                         type: string
+ *       400:
+ *         description: Invalid input data
+ *       401:
+ *         description: User not authenticated
+ *       403:
+ *         description: Account is deactivated
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+router.put(
+  "/",
+  authMiddleware,
+  verifiedEmailMiddleware,
+  validateRequest({ body: UpdateAccountSchema }),
+  accountController.updateAccount.bind(accountController)
 );
 
 export default router;
