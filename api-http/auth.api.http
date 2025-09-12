@@ -4,7 +4,6 @@
 @baseUrl = http://localhost:8000/api/v1
 
 # ------------------------------------------------------------
-
 ### POST /auth/signup
 # Description: Creates a new user account in the system and sends a verification code to the user's email address.
 POST {{baseUrl}}/auth/signup
@@ -20,7 +19,6 @@ Content-Type: application/json
 }
 
 # ------------------------------------------------------------
-
 ### POST /auth/login
 # Description: Authenticates a user and returns JWT tokens in cookies.
 POST {{baseUrl}}/auth/login
@@ -32,7 +30,6 @@ Content-Type: application/json
 }
 
 # ------------------------------------------------------------
-
 ### POST /auth/logout
 # Description: Logs out the user by clearing authentication cookies.
 # Note: Uses access_token from cookies
@@ -40,7 +37,6 @@ POST {{baseUrl}}/auth/logout
 Content-Type: application/json
 
 # ------------------------------------------------------------
-
 ### POST /auth/send-verification-code
 # Description: Sends a verification code to the user's email address.
 POST {{baseUrl}}/auth/send-verification-code
@@ -51,7 +47,6 @@ Content-Type: application/json
 }
 
 # ------------------------------------------------------------
-
 ### POST /auth/verify-email
 # Description: Verifies the user's email address using a verification code.
 POST {{baseUrl}}/auth/verify-email
@@ -63,7 +58,6 @@ Content-Type: application/json
 }
 
 # ------------------------------------------------------------
-
 ### GET /auth/validate-access
 # Description: Validates if the user's session token is valid and account is verified.
 # Note: Uses access_token from cookies
@@ -82,7 +76,6 @@ Content-Type: application/json
 }
 
 # ------------------------------------------------------------
-
 ### POST /auth/reset-password
 # Description: Resets the user's password using the code sent to their email.
 POST {{baseUrl}}/auth/reset-password
@@ -95,7 +88,6 @@ Content-Type: application/json
 }
 
 # ------------------------------------------------------------
-
 ### POST /auth/refresh-token
 # Description: Refreshes the user's access token.
 # Note: Uses refresh_token from cookies, new tokens are set in HTTP-only cookies
@@ -103,14 +95,12 @@ POST {{baseUrl}}/auth/refresh-token
 Content-Type: application/json
 
 # ------------------------------------------------------------
-
 ### GET /auth/google
 # Description: Initiates the Google OAuth authentication flow. Try on browser.
 # Note: This endpoint should be accessed through a browser
 GET {{baseUrl}}/auth/google
 
 # ------------------------------------------------------------
-
 ### GET /auth/google/callback
 # Description: Callback endpoint for Google OAuth authentication.
 GET {{baseUrl}}/auth/google/callback

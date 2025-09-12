@@ -2,7 +2,51 @@
 
 @baseUrl = http://localhost:8000/api/v1
 
-### GET /roles
+@targetUserId = 123e4567-e89b-12d3-a456-426614174003
+@newRoleId = 123e4567-e89b-12d3-a456-426614174003
+@divisionId = 123e4567-e89b-12d3-a456-426614174002
+@clubId = 123e4567-e89b-12d3-a456-426614174003
+@roleId = 123e4567-e89b-12d3-a456-426614174003
+
+# ------------------------------------------------------------
+### Get Roles Catalog
 # Description: Retrieves all roles in the system catalog (requires authentication).
 # Note: Only users with roles other than "member" or "senior member" can access this endpoint.
 GET {{baseUrl}}/roles
+
+# ------------------------------------------------------------
+### Get Assignable Roles (roles that current user can assign)
+# Description: Get roles that the current user can assign to others based on their permissions
+GET {{baseUrl}}/roles/assignable
+
+# ------------------------------------------------------------
+### Get Users with Roles (for management interface)
+# Description: Get users with their roles for role management interface
+GET {{baseUrl}}/roles/users
+
+# ------------------------------------------------------------
+### Get Users with Roles - Filtered by Division
+GET {{baseUrl}}/roles/users?divisionId={{divisionId}}
+
+# ------------------------------------------------------------
+### Get Users with Roles - Filtered by Club
+GET {{baseUrl}}/roles/users?clubId={{clubId}}
+
+# ------------------------------------------------------------
+### Get Users with Roles - Filtered by Role
+GET {{baseUrl}}/roles/users?roleId={{roleId}}
+
+# ------------------------------------------------------------
+### Get Users with Roles - Paginated
+GET {{baseUrl}}/roles/users?skip=0&limit=20
+
+# ------------------------------------------------------------
+### Assign Role to User
+# Description: Assign a role to a user (requires role management permissions)
+PUT {{baseUrl}}/roles/assign
+Content-Type: application/json
+
+{
+  "targetUserId": "{{targetUserId}}",
+  "newRoleId": "{{newRoleId}}"
+}

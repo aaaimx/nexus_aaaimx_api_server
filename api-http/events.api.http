@@ -2,10 +2,13 @@
 
 @baseUrl = http://localhost:8000/api/v1
 
-### ============================================
-### 1. CREATE EVENT
-### ============================================
+@organizerUserId = 123e4567-e89b-12d3-a456-426614174003
+@organizerDivisionId = 123e4567-e89b-12d3-a456-426614174002
+@organizerClubId = 123e4567-e89b-12d3-a456-426614174003
+@externalOrganizerName = "Academia de Programación XYZ"
+@eventId = 123e4567-e89b-12d3-a456-426614174004
 
+# ------------------------------------------------------------
 ### POST /events
 # Description: Creates a new event in the system.
 POST {{baseUrl}}/events
@@ -24,9 +27,10 @@ Content-Type: application/json
   "isPublic": true,
   "maxParticipants": 30,
   "organizerType": "USER",
-  "organizerUserId": "user-uuid-here"
+  "organizerUserId": "{{organizerUserId}}"
 }
 
+# ------------------------------------------------------------
 ### POST /events
 # Description: Creates a new course event in the system.
 POST {{baseUrl}}/events
@@ -45,9 +49,10 @@ Content-Type: application/json
   "isPublic": true,
   "maxParticipants": 25,
   "organizerType": "DIVISION",
-  "organizerDivisionId": "division-uuid-here"
+  "organizerDivisionId": "{{organizerDivisionId}}"
 }
 
+# ------------------------------------------------------------
 ### POST /events
 # Description: Creates a new workshop event in the system.
 POST {{baseUrl}}/events
@@ -66,9 +71,10 @@ Content-Type: application/json
   "isPublic": true,
   "maxParticipants": 20,
   "organizerType": "CLUB",
-  "organizerClubId": "club-uuid-here",
+  "organizerClubId": "{{organizerClubId}}",
 }
 
+# ------------------------------------------------------------
 ### POST /events
 # Description: Creates a new recurring event in the system.
 POST {{baseUrl}}/events
@@ -85,7 +91,7 @@ Content-Type: application/json
   "isPublic": false,
   "maxParticipants": 15,
   "organizerType": "USER",
-  "organizerUserId": "user-uuid-here",
+  "organizerUserId": "{{organizerUserId}}",
   "isRecurring": true,
   "recurrencePattern": "WEEKLY",
   "recurrenceInterval": 1,
@@ -93,6 +99,7 @@ Content-Type: application/json
   "recurrenceEndDate": "2025-12-15T00:00:00.000Z"
 }
 
+# ------------------------------------------------------------
 ### POST /events
 # Description: Creates a new custom recurring event in the system.
 POST {{baseUrl}}/events
@@ -109,7 +116,7 @@ Content-Type: application/json
   "isPublic": true,
   "maxParticipants": 40,
   "organizerType": "EXTERNAL",
-  "externalOrganizerName": "Academia de Programación XYZ",
+  "externalOrganizerName": "{{externalOrganizerName}}",
   "isRecurring": true,
   "recurrencePattern": "CUSTOM",
   "recurrenceDays": "1,3,5",
@@ -117,81 +124,85 @@ Content-Type: application/json
   "recurrenceEndDate": "2024-12-15T00:00:00.000Z"
 }
 
-### ============================================
-### 2. GET EVENTS
-### ============================================
-
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves all events in the system.
 GET {{baseUrl}}/events
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves events with pagination in the system.
 GET {{baseUrl}}/events?page=1&limit=5
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves events with custom pagination and sorting.
 GET {{baseUrl}}/events?page=2&limit=10&sort={"createdAt":-1}
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves events with maximum limit.
 GET {{baseUrl}}/events?page=1&limit=100
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves events by status in the system.
 GET {{baseUrl}}/events?status=PUBLISHED
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves events by type in the system.
 GET {{baseUrl}}/events?eventType=SINGLE
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves events by date range in the system.
 GET {{baseUrl}}/events?startDate=2024-03-01T00:00:00.000Z&endDate=2024-03-31T23:59:59.999Z
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves public events in the system.
 GET {{baseUrl}}/events/public
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves upcoming events in the system.
 GET {{baseUrl}}/events/upcoming
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves my events in the system.
 GET {{baseUrl}}/events/my-events
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves events by organizer in the system.
-GET {{baseUrl}}/events?organizerType=USER&organizerId=user-uuid-here
+GET {{baseUrl}}/events?organizerType=USER&organizerId={{organizerUserId}}
 
-### ============================================
-### 3. GET SPECIFIC EVENT
-### ============================================
-
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves an event by ID in the system.
-GET {{baseUrl}}/events/event-uuid-here
+GET {{baseUrl}}/events/{{eventId}}
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves an event with sessions in the system.
-GET {{baseUrl}}/events/event-uuid-here?includeSessions=true
+GET {{baseUrl}}/events/{{eventId}}?includeSessions=true
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves an event with attendees in the system.
-GET {{baseUrl}}/events/event-uuid-here?includeAttendees=true
+GET {{baseUrl}}/events/{{eventId}}?includeAttendees=true
 
+# ------------------------------------------------------------
 ### GET /events
 # Description: Retrieves an event with statistics in the system.
-GET {{baseUrl}}/events/event-uuid-here?includeStatistics=true
+GET {{baseUrl}}/events/{{eventId}}?includeStatistics=true
 
-### ============================================
-### 4. UPDATE EVENT
-### ============================================
-
+# ------------------------------------------------------------
 ### PUT /events
 # Description: Updates an event basic info in the system.
-PUT {{baseUrl}}/events/event-uuid-here
+PUT {{baseUrl}}/events/{{eventId}}
 Content-Type: application/json
 
 {
@@ -200,18 +211,20 @@ Content-Type: application/json
   "location": "Nueva ubicación - Aula 201"
 }
 
+# ------------------------------------------------------------
 ### PUT /events
 # Description: Updates an event status in the system.
-PUT {{baseUrl}}/events/event-uuid-here
+PUT {{baseUrl}}/events/{{eventId}}
 Content-Type: application/json
 
 {
   "status": "PUBLISHED"
 }
 
+# ------------------------------------------------------------
 ### PUT /events
 # Description: Updates an event schedule in the system.
-PUT {{baseUrl}}/events/event-uuid-here
+PUT {{baseUrl}}/events/{{eventId}}
 Content-Type: application/json
 
 {
@@ -221,31 +234,27 @@ Content-Type: application/json
   "endTime": "18:00"
 }
 
+# ------------------------------------------------------------
 ### PUT /events
 # Description: Updates an event participants limit in the system.
-PUT {{baseUrl}}/events/event-uuid-here
+PUT {{baseUrl}}/events/{{eventId}}
 Content-Type: application/json
 
 {
   "maxParticipants": 50
 }
 
-### ============================================
-### 5. DELETE EVENT
-### ============================================
-
+# ------------------------------------------------------------
 ### DELETE /events
 # Description: Deletes an event in the system.
-DELETE {{baseUrl}}/events/event-uuid-here
+DELETE {{baseUrl}}/events/{{eventId}}
 
-### ============================================
-### 6. EVENT REGISTRATION
-### ============================================
-
+# ------------------------------------------------------------
 ### POST /events
 # Description: Registers for an event in the system.
-POST {{baseUrl}}/events/event-uuid-here/register
+POST {{baseUrl}}/events/{{eventId}}/register
 
+# ------------------------------------------------------------
 ### POST /events
 # Description: Cancels an event registration in the system.
-POST {{baseUrl}}/events/event-uuid-here/cancel
+POST {{baseUrl}}/events/{{eventId}}/cancel

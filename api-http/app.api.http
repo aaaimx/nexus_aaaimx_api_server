@@ -4,12 +4,12 @@
 
 @endpoint = /health
 
+### ------------------------------------------------------------
 ### Comprehensive Health Check
 GET {{baseUrl}}{{endpoint}}
 Content-Type: application/json
 
-###
-
+### ------------------------------------------------------------
 ### Liveness Probe
 GET {{baseUrl}}{{endpoint}}/live
 Content-Type: application/json
