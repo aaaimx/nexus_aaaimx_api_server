@@ -1,0 +1,8 @@
+### Roles API - Nexus AAAIMX
+
+@baseUrl = http://localhost:8000/api/v1
+
+### GET /roles
+# Description: Retrieves all roles in the system catalog (requires authentication).
+# Note: Only users with roles other than "member" or "senior member" can access this endpoint.
+GET {{baseUrl}}/roles
