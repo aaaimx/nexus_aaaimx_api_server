@@ -67,8 +67,7 @@ export class AuthController {
       userRepository,
       jwtService,
       passwordService,
-      sessionService,
-      defaultRoleService
+      sessionService
     );
     this.refreshTokenUseCase = new RefreshTokenUseCase(
       userRepository,
