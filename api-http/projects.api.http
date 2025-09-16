@@ -1,0 +1,148 @@
+### Projects API - Nexus AAAIMX
+
+@baseUrl = http://localhost:8000/api/v1
+
+# ------------------------------------------------------------
+### POST /projects
+# Description: Creates a new project
+# Note: Requires authentication and verified email
+POST {{baseUrl}}/projects
+Content-Type: application/json
+
+{
+  "name": "AI Research Project",
+  "description": "A comprehensive research project on artificial intelligence applications",
+  "coverUrl": "https://example.com/project-cover.jpg",
+  "isPublic": true,
+  "tagIds": ["tag-uuid-here", "another-tag-uuid"],
+  "clubIds": ["club-uuid-here"],
+  "divisionIds": ["division-uuid-here"]
+}
+
+# ------------------------------------------------------------
+### GET /projects
+# Description: Retrieves all projects with optional filters
+# Note: Requires authentication
+GET {{baseUrl}}/projects
+
+# ------------------------------------------------------------
+### GET /projects - With Filters
+# Description: Retrieves projects filtered by status, visibility, and search term
+GET {{baseUrl}}/projects?status=PUBLISHED&isPublic=true&search=AI&limit=10&offset=0
+
+# ------------------------------------------------------------
+### GET /projects - Filter by Club
+# Description: Retrieves projects associated with a specific club
+GET {{baseUrl}}/projects?clubId=club-uuid-here&isPublic=true
+
+# ------------------------------------------------------------
+### GET /projects - Filter by Division
+# Description: Retrieves projects associated with a specific division
+GET {{baseUrl}}/projects?divisionId=division-uuid-here&status=ONLINE
+
+# ------------------------------------------------------------
+### GET /projects/:id
+# Description: Retrieves a specific project by ID
+# Note: Requires authentication
+GET {{baseUrl}}/projects/project-uuid-here
+
+# ------------------------------------------------------------
+### PUT /projects/:id
+# Description: Updates a project
+# Note: Requires authentication and verified email. At least one field must be provided.
+PUT {{baseUrl}}/projects/project-uuid-here
+Content-Type: application/json
+
+{
+  "name": "Updated AI Research Project",
+  "description": "Updated description for the AI research project",
+  "status": "ONLINE",
+  "isPublic": false,
+  "tagIds": ["tag-uuid-here", "another-tag-uuid"],
+  "clubIds": ["club-uuid-here", "another-club-uuid"]
+}
+
+# ------------------------------------------------------------
+### DELETE /projects/:id
+# Description: Deletes a project
+# Note: Requires authentication and verified email
+DELETE {{baseUrl}}/projects/project-uuid-here
+
+# ------------------------------------------------------------
+### GET /projects/:id/members
+# Description: Retrieves all members of a specific project
+# Note: Requires authentication
+GET {{baseUrl}}/projects/project-uuid-here/members
+
+# ------------------------------------------------------------
+### POST /projects/:id/members
+# Description: Adds a member to a project
+# Note: Requires authentication and verified email
+POST {{baseUrl}}/projects/project-uuid-here/members
+Content-Type: application/json
+
+{
+  "memberId": "user-uuid-here"
+}
+
+# ------------------------------------------------------------
+### DELETE /projects/:id/members/:memberId
+# Description: Removes a member from a project
+# Note: Requires authentication and verified email
+DELETE {{baseUrl}}/projects/project-uuid-here/members/user-uuid-here
+
+# ============================================================
+# PROJECT REQUESTS ENDPOINTS
+# ============================================================
+
+# ------------------------------------------------------------
+### POST /projects/:id/requests
+# Description: Create a request to join a project
+# Note: Requires authentication and verified email
+POST {{baseUrl}}/projects/project-uuid-here/requests
+Content-Type: application/json
+
+{
+  "message": "I would like to join this project because I have experience in machine learning and would love to contribute to this AI research initiative."
+}
+
+# ------------------------------------------------------------
+### GET /projects/:id/requests
+# Description: Get all requests for a project (project creator/admin only)
+# Note: Requires authentication and proper permissions
+GET {{baseUrl}}/projects/project-uuid-here/requests
+
+# ------------------------------------------------------------
+### GET /projects/:id/requests - Filter by Status
+# Description: Get requests filtered by status
+GET {{baseUrl}}/projects/project-uuid-here/requests?status=PENDING
+
+# ------------------------------------------------------------
+### PUT /projects/:id/requests/:requestId
+# Description: Process a project request (approve)
+# Note: Requires authentication, verified email, and proper permissions
+PUT {{baseUrl}}/projects/project-uuid-here/requests/request-uuid-here
+Content-Type: application/json
+
+{
+  "status": "APPROVED",
+  "adminMessage": "Welcome to the team! Your experience in ML will be valuable for this project."
+}
+
+# ------------------------------------------------------------
+### PUT /projects/:id/requests/:requestId - Reject
+# Description: Process a project request (reject)
+# Note: Requires authentication, verified email, and proper permissions
+PUT {{baseUrl}}/projects/project-uuid-here/requests/request-uuid-here
+Content-Type: application/json
+
+{
+  "status": "REJECTED",
+  "adminMessage": "Thank you for your interest, but we're looking for different skills at this time."
+}
+
+# ------------------------------------------------------------
+### DELETE /projects/:id/requests/:requestId
+# Description: Cancel a project request
+# Note: Can be done by the requester or project admin
+DELETE {{baseUrl}}/projects/project-uuid-here/requests/request-uuid-here
