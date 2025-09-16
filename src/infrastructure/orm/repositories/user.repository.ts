@@ -134,7 +134,7 @@ export class UserRepository implements IUserRepository {
   async create(user: Partial<User>): Promise<User> {
     try {
       const filteredData = this.filterUndefined({
-        password: user.password ?? null,
+        password: user.password,
         first_name: user.firstName ?? null,
         last_name: user.lastName ?? null,
         bio: user.bio ?? null,
@@ -172,7 +172,7 @@ export class UserRepository implements IUserRepository {
     try {
       const userData = this.filterUndefined({
         email: user.email,
-        password: user.password ?? null,
+        password: user.password,
         first_name: user.firstName ?? null,
         last_name: user.lastName ?? null,
         bio: user.bio ?? null,
@@ -576,6 +576,32 @@ export class UserRepository implements IUserRepository {
     } catch (error) {
       throw new AppException(
         `Error finding users by role: ${(error as Error).message}`,
+        500
+      );
+    }
+  }
+
+  async getUserRoles(userId: string): Promise<{ id: string; name: string }[]> {
+    try {
+      const userRoles = await this.prisma.user_roles.findMany({
+        where: { user_id: userId },
+        include: {
+          role: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      return userRoles.map((userRole) => ({
+        id: userRole.role.id,
+        name: userRole.role.name,
+      }));
+    } catch (error) {
+      throw new AppException(
+        `Error getting user roles: ${(error as Error).message}`,
         500
       );
     }

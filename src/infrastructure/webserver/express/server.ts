@@ -58,6 +58,7 @@ import {
   divisionRoutes,
   clubRoutes,
   roleRoutes,
+  projectRoutes,
 } from "@/interfaces/routes";
 app.use(`/api/v${Config.apiVersion}/auth`, authRoutes);
 app.use(`/api/v${Config.apiVersion}/account`, accountRoutes);
@@ -65,6 +66,7 @@ app.use(`/api/v${Config.apiVersion}/events`, eventRoutes);
 app.use(`/api/v${Config.apiVersion}/divisions`, divisionRoutes);
 app.use(`/api/v${Config.apiVersion}/clubs`, clubRoutes);
 app.use(`/api/v${Config.apiVersion}/roles`, roleRoutes);
+app.use(`/api/v${Config.apiVersion}/projects`, projectRoutes);
 
 // Swagger documentation
 const swaggerSpec = swaggerJsdoc(Config.swaggerConfig);

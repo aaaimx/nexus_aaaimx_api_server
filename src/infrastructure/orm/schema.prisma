@@ -38,7 +38,7 @@ enum RecurrencePattern {
   CUSTOM
 }
 
-enum EventStatus {
+enum ContentStatus {
   DRAFT
   PUBLISHED
   ARCHIVED
@@ -109,7 +109,7 @@ model events {
   id String @id @default(uuid())
   name String @unique
   description String?
-  status EventStatus @default(DRAFT)
+  status ContentStatus @default(DRAFT)
   event_type EventType @default(SINGLE)
   
   // Campos para eventos únicos
@@ -169,7 +169,7 @@ model projects {
   name String @unique
   description String?
   cover_url String?
-  status EventStatus @default(DRAFT)
+  status ContentStatus @default(DRAFT)
   is_public Boolean @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
