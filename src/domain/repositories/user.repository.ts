@@ -28,4 +28,5 @@ export interface IUserRepository {
   findUsersByDivision(divisionId: string): Promise<UserWithRole[]>;
   findUsersByClub(clubId: string): Promise<UserWithRole[]>;
   findUsersByRole(roleId: string): Promise<UserWithRole[]>;
+  getUserRoles(userId: string): Promise<{ id: string; name: string }[]>;
 }
