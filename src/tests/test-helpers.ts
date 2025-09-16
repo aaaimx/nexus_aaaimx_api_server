@@ -2,10 +2,17 @@ import { User } from "@/domain/entities/user.entity";
 import { Role } from "@/domain/entities/role.entity";
 import { Division } from "@/domain/entities/division.entity";
 import { Club } from "@/domain/entities/club.entity";
+import { Project, ContentStatus } from "@/domain/entities/project.entity";
+import {
+  ProjectRequest,
+  RequestStatus,
+} from "@/domain/entities/project-request.entity";
 import { IUserRepository } from "@/domain/repositories/user.repository";
 import { IRoleRepository } from "@/domain/repositories/role.repository";
 import { IDivisionRepository } from "@/domain/repositories/division.repository";
 import { IClubRepository } from "@/domain/repositories/club.repository";
+import { IProjectRepository } from "@/domain/repositories/project.repository";
+import { IProjectRequestRepository } from "@/domain/repositories/project-request.repository";
 import { JwtService } from "@/infrastructure/external-services";
 import { PasswordService } from "@/infrastructure/external-services";
 import { VerificationCodeService } from "@/infrastructure/external-services";
@@ -67,6 +74,71 @@ export function createMockClub(overrides: Partial<Club> = {}): Club {
   };
 }
 
+export function createMockProject(overrides: Partial<Project> = {}): Project {
+  const defaults = {
+    id: "project-123",
+    name: "AI Research Project",
+    description:
+      "A comprehensive research project on artificial intelligence applications",
+    coverUrl: "https://example.com/project-cover.jpg",
+    status: ContentStatus.DRAFT,
+    isPublic: true,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+    userId: "user-123",
+    tags: ["tag-1", "tag-2"],
+    clubIds: ["club-123"],
+    divisionIds: ["division-123"],
+    memberIds: ["user-123"],
+  };
+
+  const merged = { ...defaults, ...overrides };
+
+  return new Project(
+    merged.id,
+    merged.name,
+    merged.description,
+    merged.coverUrl,
+    merged.status,
+    merged.isPublic,
+    merged.createdAt,
+    merged.updatedAt,
+    merged.userId,
+    merged.tags,
+    merged.clubIds,
+    merged.divisionIds,
+    merged.memberIds
+  );
+}
+
+export function createMockProjectRequest(
+  overrides: Partial<ProjectRequest> = {}
+): ProjectRequest {
+  const defaults = {
+    id: "request-123",
+    userId: "user-456",
+    projectId: "project-123",
+    status: RequestStatus.PENDING,
+    message: "I would like to join this project",
+    adminMessage: undefined,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  };
+
+  const merged = { ...defaults, ...overrides };
+
+  return new ProjectRequest(
+    merged.id,
+    merged.userId,
+    merged.projectId,
+    merged.status,
+    merged.message,
+    merged.adminMessage,
+    merged.createdAt,
+    merged.updatedAt
+  );
+}
+
 export function createMockGoogleUser(
   overrides: Partial<GoogleUserInfo> = {}
 ): GoogleUserInfo {
@@ -97,6 +169,7 @@ export function createMockUserRepository(): jest.Mocked<IUserRepository> {
     findByVerificationCode: jest.fn(),
     findByResetPasswordCode: jest.fn(),
     getUserRoleId: jest.fn(),
+    getUserRoles: jest.fn(),
     findUsersWithRoles: jest.fn(),
     findUserWithRole: jest.fn(),
     updateUserRole: jest.fn(),
@@ -133,6 +206,37 @@ export function createMockClubRepository(): jest.Mocked<IClubRepository> {
     findAll: jest.fn(),
     findById: jest.fn(),
     findByName: jest.fn(),
+  };
+}
+
+export function createMockProjectRepository(): jest.Mocked<IProjectRepository> {
+  return {
+    create: jest.fn(),
+    findById: jest.fn(),
+    findByName: jest.fn(),
+    findAll: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    findUserProjects: jest.fn(),
+    findProjectsByClub: jest.fn(),
+    findProjectsByDivision: jest.fn(),
+    addMember: jest.fn(),
+    removeMember: jest.fn(),
+    isMember: jest.fn(),
+    getMembers: jest.fn(),
+  };
+}
+
+export function createMockProjectRequestRepository(): jest.Mocked<IProjectRequestRepository> {
+  return {
+    create: jest.fn(),
+    findById: jest.fn(),
+    findByUserAndProject: jest.fn(),
+    findByProject: jest.fn(),
+    findByUser: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    existsByUserAndProject: jest.fn(),
   };
 }
 
