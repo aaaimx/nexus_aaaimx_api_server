@@ -7,12 +7,16 @@ import {
   ProjectRequest,
   RequestStatus,
 } from "@/domain/entities/project-request.entity";
+import { ClubRequest } from "@/domain/entities/club-request.entity";
+import { DivisionRequest } from "@/domain/entities/division-request.entity";
 import { IUserRepository } from "@/domain/repositories/user.repository";
 import { IRoleRepository } from "@/domain/repositories/role.repository";
 import { IDivisionRepository } from "@/domain/repositories/division.repository";
 import { IClubRepository } from "@/domain/repositories/club.repository";
 import { IProjectRepository } from "@/domain/repositories/project.repository";
 import { IProjectRequestRepository } from "@/domain/repositories/project-request.repository";
+import { IClubRequestRepository } from "@/domain/repositories/club-request.repository";
+import { IDivisionRequestRepository } from "@/domain/repositories/division-request.repository";
 import { JwtService } from "@/infrastructure/external-services";
 import { PasswordService } from "@/infrastructure/external-services";
 import { VerificationCodeService } from "@/infrastructure/external-services";
@@ -139,6 +143,62 @@ export function createMockProjectRequest(
   );
 }
 
+export function createMockClubRequest(
+  overrides: Partial<ClubRequest> = {}
+): ClubRequest {
+  const defaults = {
+    id: "club-request-123",
+    userId: "user-456",
+    clubId: "club-123",
+    status: RequestStatus.PENDING,
+    message: "I would like to join this club",
+    adminMessage: undefined,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  };
+
+  const merged = { ...defaults, ...overrides };
+
+  return new ClubRequest(
+    merged.id,
+    merged.userId,
+    merged.clubId,
+    merged.status,
+    merged.message,
+    merged.adminMessage,
+    merged.createdAt,
+    merged.updatedAt
+  );
+}
+
+export function createMockDivisionRequest(
+  overrides: Partial<DivisionRequest> = {}
+): DivisionRequest {
+  const defaults = {
+    id: "division-request-123",
+    userId: "user-456",
+    divisionId: "division-123",
+    status: RequestStatus.PENDING,
+    message: "I would like to join this division",
+    adminMessage: undefined,
+    createdAt: new Date("2024-01-01"),
+    updatedAt: new Date("2024-01-01"),
+  };
+
+  const merged = { ...defaults, ...overrides };
+
+  return new DivisionRequest(
+    merged.id,
+    merged.userId,
+    merged.divisionId,
+    merged.status,
+    merged.message,
+    merged.adminMessage,
+    merged.createdAt,
+    merged.updatedAt
+  );
+}
+
 export function createMockGoogleUser(
   overrides: Partial<GoogleUserInfo> = {}
 ): GoogleUserInfo {
@@ -243,6 +303,32 @@ export function createMockProjectRequestRepository(): jest.Mocked<IProjectReques
     update: jest.fn(),
     delete: jest.fn(),
     existsByUserAndProject: jest.fn(),
+  };
+}
+
+export function createMockClubRequestRepository(): jest.Mocked<IClubRequestRepository> {
+  return {
+    findById: jest.fn(),
+    findByUserAndClub: jest.fn(),
+    findByClub: jest.fn(),
+    findByUser: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    existsByUserAndClub: jest.fn(),
+  };
+}
+
+export function createMockDivisionRequestRepository(): jest.Mocked<IDivisionRequestRepository> {
+  return {
+    findById: jest.fn(),
+    findByUserAndDivision: jest.fn(),
+    findByDivision: jest.fn(),
+    findByUser: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+    existsByUserAndDivision: jest.fn(),
   };
 }
 
