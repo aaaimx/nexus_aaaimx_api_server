@@ -1,8 +1,43 @@
 ### Clubs API - Nexus AAAIMX
 
+### Variables
 @baseUrl = http://localhost:8000/api/v1
 
 # ------------------------------------------------------------
 ### GET /clubs
-# Description: Retrieves all clubs in the system catalog.
+# Description: Get all clubs catalog (public access)
 GET {{baseUrl}}/clubs
+Content-Type: application/json
+
+# ------------------------------------------------------------
+### POST /clubs
+# Description: Create a new club (committee and president only)
+# Note: Requires authentication and proper role permissions
+POST {{baseUrl}}/clubs
+Content-Type: application/json
+
+{
+  "name": "Club de Inteligencia Artificial",
+  "description": "Club dedicado al desarrollo y estudio de la inteligencia artificial",
+  "logoUrl": "https://example.com/ai-club-logo.png"
+}
+
+# ------------------------------------------------------------
+### PUT /clubs/:id
+# Description: Update an existing club (committee and president only)
+# Note: Replace {club-id} with actual club UUID
+PUT {{baseUrl}}/clubs/{club-id}
+Content-Type: application/json
+
+{
+  "name": "Club de IA y Machine Learning",
+  "description": "Club dedicado al desarrollo y estudio de la inteligencia artificial y machine learning",
+  "logoUrl": "https://example.com/ai-ml-club-logo.png"
+}
+
+# ------------------------------------------------------------
+### DELETE /clubs/:id
+# Description: Delete a club (committee and president only)
+# Note: Replace {club-id} with actual club UUID
+DELETE {{baseUrl}}/clubs/{club-id}
+Content-Type: application/json

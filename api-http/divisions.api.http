@@ -1,8 +1,43 @@
 ### Divisions API - Nexus AAAIMX
 
+### Variables
 @baseUrl = http://localhost:8000/api/v1
 
 # ------------------------------------------------------------
 ### GET /divisions
-# Description: Retrieves all divisions in the system catalog.
+# Description: Get all divisions catalog (public access)
 GET {{baseUrl}}/divisions
+Content-Type: application/json
+
+# ------------------------------------------------------------
+### POST /divisions
+# Description: Create a new division (committee and president only)
+# Note: Requires authentication and proper role permissions
+POST {{baseUrl}}/divisions
+Content-Type: application/json
+
+{
+  "name": "División de Tecnología",
+  "description": "División encargada del desarrollo tecnológico de la organización",
+  "logoUrl": "https://example.com/tech-division-logo.png"
+}
+
+# ------------------------------------------------------------
+### PUT /divisions/:id
+# Description: Update an existing division (committee and president only)
+# Note: Replace {division-id} with actual division UUID
+PUT {{baseUrl}}/divisions/{division-id}
+Content-Type: application/json
+
+{
+  "name": "División de Innovación Tecnológica",
+  "description": "División encargada del desarrollo e innovación tecnológica de la organización",
+  "logoUrl": "https://example.com/innovation-division-logo.png"
+}
+
+# ------------------------------------------------------------
+### DELETE /divisions/:id
+# Description: Delete a division (committee and president only)
+# Note: Replace {division-id} with actual division UUID
+DELETE {{baseUrl}}/divisions/{division-id}
+Content-Type: application/json
