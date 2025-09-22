@@ -41,3 +41,42 @@ Content-Type: application/json
 # Note: Replace {club-id} with actual club UUID
 DELETE {{baseUrl}}/clubs/{club-id}
 Content-Type: application/json
+
+# ============================================================
+### CLUB REQUESTS MANAGEMENT (Leaders & Co-Leaders Only)
+# ============================================================
+
+# ------------------------------------------------------------
+### GET /clubs/:id/requests
+# Description: List club requests for a specific club (leaders and co-leaders only)
+# Note: Replace {club-id} with actual club UUID
+GET {{baseUrl}}/clubs/{club-id}/requests
+Content-Type: application/json
+
+# ------------------------------------------------------------
+### GET /clubs/requests
+# Description: List all club requests for user's clubs (leaders and co-leaders only)
+GET {{baseUrl}}/clubs/requests
+Content-Type: application/json
+
+# ------------------------------------------------------------
+### POST /clubs/requests/:requestId/approve
+# Description: Approve a club request (leaders and co-leaders only)
+# Note: Replace {request-id} with actual request UUID
+POST {{baseUrl}}/clubs/requests/{request-id}/approve
+Content-Type: application/json
+
+{
+  "adminMessage": "Welcome to the club! We're excited to have you join us."
+}
+
+# ------------------------------------------------------------
+### POST /clubs/requests/:requestId/reject
+# Description: Reject a club request (leaders and co-leaders only)  
+# Note: Replace {request-id} with actual request UUID
+POST {{baseUrl}}/clubs/requests/{request-id}/reject
+Content-Type: application/json
+
+{
+  "adminMessage": "Thank you for your interest. We encourage you to reapply in the future."
+}

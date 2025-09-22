@@ -41,3 +41,42 @@ Content-Type: application/json
 # Note: Replace {division-id} with actual division UUID
 DELETE {{baseUrl}}/divisions/{division-id}
 Content-Type: application/json
+
+# ============================================================
+### DIVISION REQUESTS MANAGEMENT (Leaders & Co-Leaders Only)
+# ============================================================
+
+# ------------------------------------------------------------
+### GET /divisions/:id/requests
+# Description: List division requests for a specific division (leaders and co-leaders only)
+# Note: Replace {division-id} with actual division UUID
+GET {{baseUrl}}/divisions/{division-id}/requests
+Content-Type: application/json
+
+# ------------------------------------------------------------
+### GET /divisions/requests
+# Description: List all division requests for user's divisions (leaders and co-leaders only)
+GET {{baseUrl}}/divisions/requests
+Content-Type: application/json
+
+# ------------------------------------------------------------
+### POST /divisions/requests/:requestId/approve
+# Description: Approve a division request (leaders and co-leaders only)
+# Note: Replace {request-id} with actual request UUID
+POST {{baseUrl}}/divisions/requests/{request-id}/approve
+Content-Type: application/json
+
+{
+  "adminMessage": "Welcome to the division! We look forward to your contributions."
+}
+
+# ------------------------------------------------------------
+### POST /divisions/requests/:requestId/reject
+# Description: Reject a division request (leaders and co-leaders only)
+# Note: Replace {request-id} with actual request UUID
+POST {{baseUrl}}/divisions/requests/{request-id}/reject
+Content-Type: application/json
+
+{
+  "adminMessage": "Thank you for your interest. Please feel free to apply again in the future."
+}
