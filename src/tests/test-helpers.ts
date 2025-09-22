@@ -198,6 +198,9 @@ export function createMockDivisionRepository(): jest.Mocked<IDivisionRepository>
     findAll: jest.fn(),
     findById: jest.fn(),
     findByName: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
   };
 }
 
@@ -206,6 +209,9 @@ export function createMockClubRepository(): jest.Mocked<IClubRepository> {
     findAll: jest.fn(),
     findById: jest.fn(),
     findByName: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
   };
 }
 
